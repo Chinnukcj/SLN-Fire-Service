@@ -1,0 +1,6 @@
+{
+  "name": "SLN Fire Services",
+  "description": "Premium industrial fire protection equipment, certified refilling services, and commercial quote inquiry platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

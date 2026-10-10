@@ -1,0 +1,44 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer White Background & Border -->
+  <rect width="400" height="400" fill="#ffffff" rx="16" />
+  <rect x="6" y="6" width="388" height="388" fill="none" stroke="#1c398e" strokeWidth="8" rx="12" />
+
+  <!-- Top Block: Royal Blue SLN -->
+  <rect x="22" y="22" width="356" height="180" fill="#1b3992" />
+  <text
+    x="200"
+    y="152"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="'Times New Roman', Georgia, serif"
+    font-size="148"
+    font-weight="800"
+    letter-spacing="-3"
+  >SLN</text>
+
+  <!-- Middle Block: Vivid Red Fire Service -->
+  <rect x="22" y="202" width="356" height="142" fill="#e01e2b" />
+  <text
+    x="200"
+    y="300"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="'Brush Script MT', 'Dancing Script', cursive"
+    font-size="76"
+    font-weight="700"
+    font-style="italic"
+  >Fire Service</text>
+
+  <!-- Bottom Block: White bar with Blue Fire Protection Engineers -->
+  <rect x="22" y="344" width="356" height="34" fill="#ffffff" />
+  <text
+    x="200"
+    y="370"
+    text-anchor="middle"
+    fill="#1b3992"
+    font-family="'Plus Jakarta Sans', system-ui, sans-serif"
+    font-size="24"
+    font-weight="700"
+    letter-spacing="0.5"
+  >Fire Protection Engineers</text>
+</svg>
