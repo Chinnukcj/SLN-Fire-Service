@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { ProductCard } from './components/ProductCard';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
+import { QuotationModal } from './components/QuotationModal';
 import { RefillSection } from './components/RefillSection';
 import { FireClassesGuide } from './components/FireClassesGuide';
 import { Footer } from './components/Footer';
@@ -19,11 +20,12 @@ import {
   MessageSquare,
   Mail,
   CheckCircle2,
-  FileText
+  FileText,
+  Printer
 } from 'lucide-react';
 
 function AppContent() {
-  const { totalUnits, subtotal, setIsCartOpen, setIsCheckoutOpen } = useCart();
+  const { totalUnits, subtotal, setIsCartOpen, setIsCheckoutOpen, setIsQuotationOpen } = useCart();
   const [activeTab, setActiveTab] = useState('extinguishers');
   const [filterCategory, setFilterCategory] = useState<'all' | 'extinguisher' | 'equipment'>('all');
 
@@ -37,9 +39,10 @@ function AppContent() {
       {/* Top Navbar */}
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Cart Drawer & Checkout Modal Overlays */}
+      {/* Cart Drawer, Checkout Modal & Printable Quotation Overlays */}
       <CartDrawer />
       <CheckoutModal />
+      <QuotationModal />
 
       {/* ========================================================================= */}
       {/* HERO SECTION                                                             */}
@@ -79,11 +82,20 @@ function AppContent() {
 
               <button
                 type="button"
-                onClick={() => setIsCheckoutOpen(true)}
-                className="px-7 py-3.5 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white font-semibold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 hover:border-zinc-500"
+                onClick={() => setIsQuotationOpen(true)}
+                className="px-7 py-3.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-amber-400/20 hover:scale-[1.02] cursor-pointer"
               >
-                <FileText className="w-4 h-4 text-amber-400" />
-                Build Quote & Inquire
+                <Printer className="w-4 h-4" />
+                View Official Quotation
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsCheckoutOpen(true)}
+                className="px-6 py-3.5 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white font-semibold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 hover:border-zinc-500 cursor-pointer"
+              >
+                <FileText className="w-4 h-4 text-zinc-400" />
+                Online RFQ
               </button>
             </div>
           </div>
@@ -302,17 +314,26 @@ function AppContent() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIsCartOpen(true)}
-              className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl transition-colors"
+              onClick={() => setIsQuotationOpen(true)}
+              className="px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-zinc-950 text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+              title="Open Printable Letterhead Quotation"
             >
-              View Cart
+              <Printer className="w-3.5 h-3.5" />
+              <span>View Quotation</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+            >
+              Cart
             </button>
             <button
               type="button"
               onClick={() => setIsCheckoutOpen(true)}
-              className="px-4 py-2 bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
             >
-              Review & Inquire
+              Inquire
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

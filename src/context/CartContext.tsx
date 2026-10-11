@@ -35,6 +35,8 @@ interface CartContextType {
   setIsCartOpen: (open: boolean) => void;
   isCheckoutOpen: boolean;
   setIsCheckoutOpen: (open: boolean) => void;
+  isQuotationOpen: boolean;
+  setIsQuotationOpen: (open: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -73,6 +75,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isQuotationOpen, setIsQuotationOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -148,7 +151,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isCartOpen,
         setIsCartOpen,
         isCheckoutOpen,
-        setIsCheckoutOpen
+        setIsCheckoutOpen,
+        isQuotationOpen,
+        setIsQuotationOpen
       }}
     >
       {children}

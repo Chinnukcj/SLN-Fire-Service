@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { X, Trash2, Plus, Minus, ArrowRight, FileText, Package, RefreshCw, PhoneCall } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ArrowRight, FileText, Package, RefreshCw, PhoneCall, Printer } from 'lucide-react';
 import { ProductIllustration } from './ProductIllustrations';
 
 export const CartDrawer: React.FC = () => {
@@ -16,7 +16,8 @@ export const CartDrawer: React.FC = () => {
     totalUnits,
     isCartOpen,
     setIsCartOpen,
-    setIsCheckoutOpen
+    setIsCheckoutOpen,
+    setIsQuotationOpen
   } = useCart();
 
   if (!isCartOpen) return null;
@@ -242,16 +243,30 @@ export const CartDrawer: React.FC = () => {
 
               <div className="space-y-2 pt-2">
                 <button
-                  onClick={handleProceedToCheckout}
-                  className="w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-400/10 hover:shadow-amber-400/20"
+                  type="button"
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    setIsQuotationOpen(true);
+                  }}
+                  className="w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-400/20 hover:scale-[1.01] cursor-pointer"
                 >
-                  <span>Generate Official RFQ & Dispatch</span>
+                  <Printer className="w-4 h-4" />
+                  <span>View &amp; Print Official Quotation</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleProceedToCheckout}
+                  className="w-full py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition-all border border-zinc-700 hover:border-zinc-600 cursor-pointer"
+                >
+                  <span>Online Inquiry &amp; WhatsApp Dispatch</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
+                  type="button"
                   onClick={clearCart}
-                  className="w-full py-2 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
+                  className="w-full py-2 text-zinc-400 hover:text-zinc-200 text-xs transition-colors cursor-pointer"
                 >
                   Clear Inquiry List
                 </button>

@@ -31,17 +31,17 @@ export const Footer: React.FC = () => {
           {/* Office & Facility Address */}
           <div className="space-y-3">
             <span className="text-xs uppercase tracking-wider text-zinc-200 font-bold block">
-              Facility & Office Address
+              Facility &amp; Office Address
             </span>
             <div className="space-y-2 text-zinc-300">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-zinc-300 leading-relaxed">
-                  #18/1 Arehalli, Ittumadu Main Road, Near Basavanna Temple, Bengaluru 560061
+                  #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka
                 </p>
               </div>
               <div className="pt-2 text-[11px] text-zinc-400 font-mono">
-                Landmark: Near Basavanna Temple
+                Landmark: Near Basavanna Temple, Arehalli
               </div>
             </div>
           </div>

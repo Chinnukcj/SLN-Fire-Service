@@ -543,7 +543,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Card Actions Bottom */}
         <div className="p-5 pt-2 space-y-2">
-          {/* Add to Inquiry / Quote Cart Button */}
+          {/* Add to Quote Button */}
           <button
             type="button"
             onClick={handleAddToCart}
@@ -556,13 +556,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {addedAnimation ? (
               <>
                 <Check className="w-4 h-4" />
-                Added to Cart!
+                Added to Quotation!
               </>
             ) : (
               <>
                 <ShoppingBag className="w-4 h-4" />
                 <span>
-                  Add {quantity} [{serviceLabel}] to Cart
+                  Add {quantity} [{serviceLabel}] to Quote
                 </span>
               </>
             )}
