@@ -256,12 +256,6 @@ export const QuotationModal: React.FC = () => {
                     {customerAddress || 'Karnataka'}
                   </p>
                 </div>
-
-                <div className="text-right space-y-1">
-                  <div className="inline-block bg-slate-100 border border-slate-300 rounded px-2.5 py-1 text-[11px] font-bold text-slate-800">
-                    SINCE 2004
-                  </div>
-                </div>
               </div>
 
               {/* Salutation, Subject & Attention */}

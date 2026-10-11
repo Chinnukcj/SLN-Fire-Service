@@ -47,7 +47,7 @@ function AppContent() {
       {/* ========================================================================= */}
       {/* HERO SECTION                                                             */}
       {/* ========================================================================= */}
-      <section className="relative pt-10 pb-20 md:pt-16 md:pb-28 overflow-hidden">
+      <section id="home-view" className="relative pt-10 pb-20 md:pt-16 md:pb-28 overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-red-950/15 rounded-full blur-[140px] pointer-events-none" />
 
@@ -167,7 +167,7 @@ function AppContent() {
       {/* ========================================================================= */}
       {/* PRODUCT CATALOG SECTION                                                  */}
       {/* ========================================================================= */}
-      <section id="extinguishers" className="py-16 border-t border-zinc-800/80">
+      <section id="catalog-view" className="py-16 border-t border-zinc-800/80">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           {/* Header & Filter Bar */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
