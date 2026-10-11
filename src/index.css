@@ -40,8 +40,11 @@
 }
 
 @media print {
-  /* 1. Remove the Browser Header/Footer */
-  @page { margin: 0 !important; }
+  /* 1. Remove the Browser Header/Footer & Lock to A4 Portrait */
+  @page {
+    size: A4 portrait;
+    margin: 0 !important;
+  }
 
   /* 2. Hide all underlying website views to prevent empty pages */
   #home-view, 
@@ -73,12 +76,14 @@
 
   /* 5. Anchor the printable quotation and add padding so text doesn't touch the edge of the paper */
   #printable-quotation {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     position: relative !important;
     width: 100% !important;
     height: auto !important;
     margin: 0 !important;
-    padding: 15mm 20mm !important; /* Internal padding replaces the missing @page margin */
+    padding: 10mm 15mm !important; /* Slightly reduced padding to maximize printable area */
     box-shadow: none !important;
     border: none !important;
     overflow: visible !important;
@@ -93,6 +98,13 @@
     print-color-adjust: exact !important;
   }
 
+  /* Page Break Avoidance */
+  .break-inside-avoid,
+  .page-break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
   /* 6. Hide the dark modal background and UI buttons */
   .modal-backdrop,
   .no-print,
@@ -101,3 +113,4 @@
     display: none !important;
   }
 }
+
