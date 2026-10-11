@@ -1,16 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { ServiceType } from '../data/products';
 
 export interface CartItem {
-  id: string; // Composite key: `${productId}-${capacityValue}`
+  id: string; // Composite key: `${productId}-${serviceType}-${capacityValue}${material ? `-${material}` : ''}`
   productId: string;
   name: string;
+  serviceType: ServiceType;
+  material?: string;
   capacityLabel: string;
   capacityValue: string;
-  unitPrice: number;
+  unitPrice: number; // 0 if isPriceOnRequest
+  isPriceOnRequest?: boolean;
   quantity: number;
   fireClass: string;
   standard: string;
   category: 'extinguisher' | 'refilling' | 'equipment';
+  imageUrl?: string;
 }
 
 interface CartContextType {
@@ -34,7 +39,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'sln_fire_cart_v1';
+const STORAGE_KEY = 'sln_fire_cart_v2';
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -46,19 +51,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       // Fallback
     }
-    // Default initial demonstration item so user sees immediate cart utility
+    // Default initial demonstration item matching the updated pricing structure
     return [
       {
-        id: 'abc-powder-4kg',
+        id: 'abc-powder-buy-new-4kg',
         productId: 'abc-powder',
         name: 'ABC Multipurpose Powder',
+        serviceType: 'buy-new',
         capacityLabel: '4 KG',
         capacityValue: '4kg',
-        unitPrice: 1650,
+        unitPrice: 725,
+        isPriceOnRequest: false,
         quantity: 2,
         fireClass: 'ABC',
         standard: 'IS: 15683 / BIS Certified',
-        category: 'extinguisher'
+        category: 'extinguisher',
+        imageUrl: 'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/ABC-Multipurpose1-4kg.png'
       }
     ];
   });
@@ -75,7 +83,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [items]);
 
   const addItem = (itemData: Omit<CartItem, 'id' | 'quantity'>, quantity = 1) => {
-    const id = `${itemData.productId}-${itemData.capacityValue}`;
+    const matSuffix = itemData.material ? `-${itemData.material.toLowerCase().replace(/\s+/g, '-')}` : '';
+    const id = `${itemData.productId}-${itemData.serviceType || 'buy-new'}-${itemData.capacityValue}${matSuffix}`;
+
     setItems((prev) => {
       const existingIndex = prev.findIndex((i) => i.id === id);
       if (existingIndex > -1) {
@@ -109,12 +119,15 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems([]);
   };
 
-  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const gstRate = 0.18; // 18% GST as requested
-  const gstAmount = Math.round(subtotal * gstRate);
-  const cgstAmount = Math.round(subtotal * 0.09);
-  const sgstAmount = Math.round(subtotal * 0.09);
-  const grandTotal = subtotal + gstAmount;
+  const subtotal = items.reduce(
+    (sum, item) => sum + (item.isPriceOnRequest ? 0 : item.unitPrice * item.quantity),
+    0
+  );
+  const gstRate = 0.18; // 18% GST
+  const gstAmount = Math.round(subtotal * gstRate * 100) / 100;
+  const cgstAmount = Math.round(subtotal * 0.09 * 100) / 100;
+  const sgstAmount = Math.round(subtotal * 0.09 * 100) / 100;
+  const grandTotal = Math.round((subtotal + gstAmount) * 100) / 100;
   const totalUnits = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (

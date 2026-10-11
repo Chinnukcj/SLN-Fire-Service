@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, FileText } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ArrowRight, FileText, Package, RefreshCw, PhoneCall } from 'lucide-react';
 import { ProductIllustration } from './ProductIllustrations';
 
 export const CartDrawer: React.FC = () => {
@@ -26,6 +26,15 @@ export const CartDrawer: React.FC = () => {
     setIsCheckoutOpen(true);
   };
 
+  const formatInr = (val: number) => {
+    return val.toLocaleString('en-IN', {
+      minimumFractionDigits: val % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  const hasPorItems = items.some((item) => item.isPriceOnRequest);
+
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
@@ -45,7 +54,7 @@ export const CartDrawer: React.FC = () => {
               <div>
                 <h2 className="text-base font-bold text-white font-display">Inquiry & Quote Cart</h2>
                 <p className="text-xs text-zinc-400">
-                  {totalUnits} {totalUnits === 1 ? 'item' : 'items'} selected for RFQ
+                  {totalUnits} {totalUnits === 1 ? 'unit' : 'units'} selected for RFQ
                 </p>
               </div>
             </div>
@@ -69,7 +78,7 @@ export const CartDrawer: React.FC = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-300">Your Inquiry Cart is Empty</h3>
                   <p className="text-xs text-zinc-400 mt-1 max-w-xs">
-                    Add fire extinguishers, refilling batches, or safety gear to generate a full tax breakdown and quote request.
+                    Configure Buy New or Refill items in the catalog to generate a formal GST quotation.
                   </p>
                 </div>
                 <button
@@ -82,6 +91,8 @@ export const CartDrawer: React.FC = () => {
             ) : (
               items.map((item) => {
                 const lineTotal = item.unitPrice * item.quantity;
+                const isBuyNew = item.serviceType === 'buy-new';
+
                 return (
                   <div
                     key={item.id}
@@ -89,7 +100,21 @@ export const CartDrawer: React.FC = () => {
                   >
                     {/* Small preview thumbnail */}
                     <div className="w-16 h-16 rounded-lg bg-zinc-950 border border-zinc-800 shrink-0 flex items-center justify-center p-1 overflow-hidden">
-                      <ProductIllustration type={item.productId} className="w-full h-full" />
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            const filename = item.imageUrl?.split('/').pop();
+                            if (filename && !e.currentTarget.src.endsWith(`/images/${filename}`)) {
+                              e.currentTarget.src = `/images/${filename}`;
+                            }
+                          }}
+                        />
+                      ) : (
+                        <ProductIllustration type={item.productId} className="w-full h-full" />
+                      )}
                     </div>
 
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
@@ -98,16 +123,35 @@ export const CartDrawer: React.FC = () => {
                           <h4 className="text-xs font-bold text-white truncate">{item.name}</h4>
                           <button
                             onClick={() => removeItem(item.id)}
-                            className="text-zinc-400 hover:text-red-400 p-0.5 transition-colors"
+                            className="text-zinc-500 hover:text-rose-400 p-0.5 transition-colors"
                             aria-label="Remove item"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
-                          <span className="text-amber-400/90 font-mono font-medium">{item.capacityLabel}</span>
-                          <span aria-hidden="true">·</span>
-                          <span>Class {item.fireClass}</span>
+
+                        {/* Badges: Service Type & Material */}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <span
+                            className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md font-semibold inline-flex items-center gap-1 ${
+                              isBuyNew
+                                ? 'bg-zinc-800 text-zinc-200 border border-zinc-700'
+                                : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            }`}
+                          >
+                            {isBuyNew ? <Package className="w-2.5 h-2.5" /> : <RefreshCw className="w-2.5 h-2.5" />}
+                            {isBuyNew ? 'Buy New' : 'Refill'}
+                          </span>
+
+                          <span className="text-[10px] text-zinc-300 font-mono bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800">
+                            {item.capacityLabel}
+                          </span>
+
+                          {item.material && (
+                            <span className="text-[10px] text-amber-400/90 font-mono bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800">
+                              {item.material}
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -131,13 +175,23 @@ export const CartDrawer: React.FC = () => {
                           </button>
                         </div>
 
+                        {/* Price or POR Display */}
                         <div className="text-right">
-                          <span className="text-xs font-bold text-white font-mono">
-                            ₹{new Intl.NumberFormat('en-IN').format(lineTotal)}
-                          </span>
-                          <span className="text-[10px] text-zinc-400 block">
-                            (₹{new Intl.NumberFormat('en-IN').format(item.unitPrice)} ea)
-                          </span>
+                          {item.isPriceOnRequest ? (
+                            <div className="text-amber-400 text-xs font-semibold flex items-center gap-1 justify-end font-mono">
+                              <PhoneCall className="w-3 h-3" />
+                              <span>Quote on Req.</span>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="text-xs font-bold text-white font-mono">
+                                ₹{formatInr(lineTotal)}
+                              </span>
+                              <span className="text-[10px] text-zinc-400 block font-mono">
+                                (₹{formatInr(item.unitPrice)} ea)
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -153,51 +207,53 @@ export const CartDrawer: React.FC = () => {
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-zinc-400">
                   <span>Taxable Subtotal (Base)</span>
-                  <span className="font-mono text-zinc-200">
-                    ₹{new Intl.NumberFormat('en-IN').format(subtotal)}
+                  <span className="font-mono text-zinc-200 font-semibold">
+                    ₹{formatInr(subtotal)}
                   </span>
                 </div>
 
                 <div className="flex justify-between text-zinc-400">
                   <div className="flex items-center gap-1.5">
                     <span>GST (18% Applicable)</span>
-                    <span className="text-[10px] text-zinc-400">(CGST 9% + SGST 9%)</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">(CGST 9% + SGST 9%)</span>
                   </div>
                   <span className="font-mono text-amber-400 font-semibold">
-                    + ₹{new Intl.NumberFormat('en-IN').format(gstAmount)}
+                    + ₹{formatInr(gstAmount)}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800/80 flex justify-between items-baseline">
-                  <div>
-                    <span className="text-sm font-bold text-white block">Estimated Total Quote</span>
-                    <span className="text-[10px] text-zinc-400">Includes all taxes & standard certification</span>
+                {hasPorItems && (
+                  <div className="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg flex items-center gap-2">
+                    <PhoneCall className="w-3 h-3 shrink-0" />
+                    <span>Includes Price on Request items (quoted separately)</span>
                   </div>
-                  <span className="text-lg font-black text-white font-mono">
-                    ₹{new Intl.NumberFormat('en-IN').format(grandTotal)}
+                )}
+
+                <div className="pt-2 border-t border-zinc-800 flex justify-between items-baseline">
+                  <div>
+                    <span className="text-sm font-bold text-white block">Estimated Total</span>
+                    <span className="text-[10px] text-zinc-400">Inclusive of all taxes</span>
+                  </div>
+                  <span className="text-xl font-extrabold text-white font-mono">
+                    ₹{formatInr(grandTotal)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-[11px] text-zinc-400 bg-zinc-900/80 border border-zinc-800 rounded-lg p-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Zero obligation inquiry. Formal quote & availability sent directly to you.</span>
-              </div>
-
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2">
                 <button
                   onClick={handleProceedToCheckout}
-                  className="w-full py-3 px-4 bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
+                  className="w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-400/10 hover:shadow-amber-400/20"
                 >
-                  Review Quote Breakdown & Inquire
+                  <span>Generate Official RFQ & Dispatch</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <button
                   onClick={clearCart}
-                  className="w-full py-1.5 text-[11px] text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="w-full py-2 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
                 >
-                  Clear All Items
+                  Clear Inquiry List
                 </button>
               </div>
             </div>

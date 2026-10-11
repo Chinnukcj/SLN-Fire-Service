@@ -17,7 +17,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'ABC Dry Powder Refilling (4 KG)',
     type: 'ABC Stored Pressure',
     size: '4 KG',
-    pricePerUnit: 550,
+    pricePerUnit: 220,
     testStandard: 'Nitrogen 15 Bar + New O-Ring'
   },
   {
@@ -25,7 +25,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'ABC Dry Powder Refilling (6 KG)',
     type: 'ABC Stored Pressure',
     size: '6 KG',
-    pricePerUnit: 750,
+    pricePerUnit: 255,
     testStandard: 'Nitrogen 15 Bar + Hydro Testing'
   },
   {
@@ -33,7 +33,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'CO₂ Gas Refilling & PESO Valve (4.5 KG)',
     type: 'CO2 High Pressure',
     size: '4.5 KG',
-    pricePerUnit: 850,
+    pricePerUnit: 360,
     testStandard: 'Food Grade 99.9% CO2 + Tare Weight Check'
   },
   {
@@ -41,7 +41,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'CO₂ Gas Refilling (2 KG)',
     type: 'CO2 High Pressure',
     size: '2 KG',
-    pricePerUnit: 550,
+    pricePerUnit: 180,
     testStandard: 'High Pressure Re-charge'
   },
   {
@@ -49,7 +49,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'Mechanical Foam (AFFF) Refill (9 Litre)',
     type: 'AFFF Aqueous Blanket',
     size: '9 Litre',
-    pricePerUnit: 850,
+    pricePerUnit: 295,
     testStandard: 'Foam Concentrate 3% + Chamber Flush'
   },
   {
@@ -57,7 +57,7 @@ const REFILL_OPTIONS: RefillOption[] = [
     name: 'Automatic Modular Ceiling Refill (5 KG)',
     type: 'Ceiling Modular Sensor',
     size: '5 KG',
-    pricePerUnit: 950,
+    pricePerUnit: 445,
     testStandard: 'Bulb Integrity Check + Dry Powder'
   }
 ];
@@ -97,6 +97,7 @@ export const RefillSection: React.FC = () => {
           {
             productId: opt.id,
             name: opt.name,
+            serviceType: 'refill',
             capacityLabel: opt.size,
             capacityValue: opt.id,
             unitPrice: opt.pricePerUnit,

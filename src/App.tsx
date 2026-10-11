@@ -25,7 +25,7 @@ import {
 function AppContent() {
   const { totalUnits, subtotal, setIsCartOpen, setIsCheckoutOpen } = useCart();
   const [activeTab, setActiveTab] = useState('extinguishers');
-  const [filterCategory, setFilterCategory] = useState<'all' | 'extinguisher' | 'refilling' | 'equipment'>('all');
+  const [filterCategory, setFilterCategory] = useState<'all' | 'extinguisher' | 'equipment'>('all');
 
   const filteredProducts = PRODUCTS.filter((p) => {
     if (filterCategory === 'all') return true;
@@ -168,56 +168,56 @@ function AppContent() {
                 Equipment & Extinguishers Catalog
               </h2>
               <p className="text-xs text-zinc-400 mt-1 max-w-xl">
-                Configure cylinder capacity, choose quantities, and add items to your Inquiry Cart for a complete 18% GST quotation.
+                Choose [Buy New] or [Refill], configure capacity &amp; body material, with automatic 18% GST computation and direct WhatsApp RFQ.
               </p>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1 p-1 bg-zinc-900/80 border border-zinc-800 rounded-xl">
-              <button
-                type="button"
-                onClick={() => setFilterCategory('all')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  filterCategory === 'all'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 p-1 bg-zinc-900/80 border border-zinc-800 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setFilterCategory('all')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    filterCategory === 'all'
+                      ? 'bg-zinc-100 text-zinc-950 shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  All Products
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterCategory('extinguisher')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    filterCategory === 'extinguisher'
+                      ? 'bg-zinc-100 text-zinc-950 shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Extinguishers
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterCategory('equipment')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    filterCategory === 'equipment'
+                      ? 'bg-zinc-100 text-zinc-950 shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  Safety Equipment
+                </button>
+              </div>
+
+              {/* Direct Jump to Refill Services */}
+              <a
+                href="#refilling"
+                className="px-3 py-1.5 text-xs font-semibold rounded-xl text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all flex items-center gap-1.5"
               >
-                All Products
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('extinguisher')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  filterCategory === 'extinguisher'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Extinguishers
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('refilling')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  filterCategory === 'refilling'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Refilling
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterCategory('equipment')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                  filterCategory === 'equipment'
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                Gear & Reels
-              </button>
+                <Wrench className="w-3.5 h-3.5" />
+                <span>Refilling & Hydro-Testing ↓</span>
+              </a>
             </div>
           </div>
 

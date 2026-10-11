@@ -314,6 +314,250 @@ export const ProductIllustration: React.FC<{
         </svg>
       );
 
+    case 'signage-board':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          {/* Glow backdrop aura */}
+          <rect x="44" y="65" width="152" height="110" rx="8" fill="#042f2e" stroke="#10b981" strokeWidth="1.5" />
+          {/* Photoluminescent Glow Inner Board */}
+          <rect x="48" y="69" width="144" height="102" rx="6" fill="#065f46" />
+          {/* White Border Frame Line */}
+          <rect x="52" y="73" width="136" height="94" rx="4" fill="none" stroke="#a7f3d0" strokeWidth="2" />
+          
+          {/* Running Man / Evacuation Icon */}
+          <g transform="translate(62, 85)">
+            {/* Doorway frame */}
+            <rect x="0" y="0" width="30" height="48" rx="2" fill="#042f2e" stroke="#ecfdf5" strokeWidth="2.5" />
+            {/* Running figure */}
+            <circle cx="28" cy="12" r="5" fill="#ecfdf5" />
+            <path d="M28 18 L24 30 L16 35 M24 25 L34 32 L38 45" stroke="#ecfdf5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M22 24 L14 20 M26 22 L36 16" stroke="#ecfdf5" strokeWidth="2.5" strokeLinecap="round" />
+          </g>
+
+          {/* Directional Exit Arrow */}
+          <g transform="translate(108, 97)">
+            <line x1="0" y1="12" x2="28" y2="12" stroke="#ecfdf5" strokeWidth="5" strokeLinecap="round" />
+            <polyline points="20,2 32,12 20,22" fill="none" stroke="#ecfdf5" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
+
+          {/* Text: FIRE EXIT */}
+          <rect x="52" y="142" width="136" height="25" fill="#042f2e" />
+          <text x="120" y="159" textAnchor="middle" fill="#ecfdf5" fontSize="13" fontWeight="900" letterSpacing="2" fontFamily="sans-serif">
+            FIRE EXIT
+          </text>
+
+          {/* Photoluminescent Glow Tag */}
+          <rect x="68" y="48" width="104" height="15" rx="3" fill="#14532d" stroke="#34d399" strokeWidth="1" />
+          <text x="120" y="59" textAnchor="middle" fill="#6ee7b7" fontSize="7.5" fontWeight="800" fontFamily="sans-serif">
+            GLOW-IN-THE-DARK / IS: 9457
+          </text>
+        </svg>
+      );
+
+    case 'smoke-detector':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          
+          {/* Ceiling Mounting Base */}
+          <circle cx="120" cy="120" r="74" fill="#09090b" stroke="#3f3f46" strokeWidth="1.5" />
+          <circle cx="120" cy="120" r="68" fill="#27272a" stroke="#52525b" strokeWidth="2" />
+          
+          {/* Outer Housing Disc */}
+          <circle cx="120" cy="120" r="60" fill="#f4f4f5" stroke="#d4d4d8" strokeWidth="1.5" />
+          {/* Subtle 3D Bevel Shadow */}
+          <circle cx="120" cy="120" r="54" fill="#e4e4e7" />
+          
+          {/* Optical Smoke Vents (Circumferential Slots) */}
+          <circle cx="120" cy="120" r="42" fill="#18181b" stroke="#27272a" strokeWidth="3" strokeDasharray="12 4" />
+          
+          {/* Central Sensor Dome */}
+          <circle cx="120" cy="120" r="30" fill="#f4f4f5" stroke="#d4d4d8" strokeWidth="1.5" />
+          <circle cx="120" cy="120" r="22" fill="#ffffff" />
+          <circle cx="120" cy="120" r="14" fill="#e4e4e7" stroke="#cbd5e1" strokeWidth="1" />
+
+          {/* 360° Visual Alarm LED Indicator Ring */}
+          <circle cx="120" cy="120" r="7" fill="#ef4444" stroke="#dc2626" strokeWidth="1.5" />
+          <circle cx="120" cy="120" r="3" fill="#ffffff" />
+          
+          {/* Dual Status Indicator Dots */}
+          <circle cx="95" cy="120" r="3.5" fill="#22c55e" />
+          <circle cx="145" cy="120" r="3.5" fill="#ef4444" />
+          
+          {/* Regulatory Stamp */}
+          <rect x="76" y="180" width="88" height="20" rx="4" fill="#18181b" stroke="#3f3f46" strokeWidth="1" />
+          <text x="120" y="193" textAnchor="middle" fill="#e4e4e7" fontSize="7.5" fontWeight="700" fontFamily="sans-serif">
+            OPTICAL • IS: 11360
+          </text>
+        </svg>
+      );
+
+    case 'fire-alarm-panel':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          
+          {/* Panel Cabinet Enclosure (Red / Charcoal Steel) */}
+          <rect x="52" y="44" width="136" height="152" rx="8" fill="#18181b" stroke="#b91c1c" strokeWidth="2" />
+          <rect x="56" y="48" width="128" height="144" rx="6" fill="#121215" stroke="#27272a" strokeWidth="1" />
+          
+          {/* Top Header Strip with Brand / Status */}
+          <rect x="62" y="54" width="116" height="20" rx="3" fill="#7f1d1d" />
+          <text x="120" y="68" textAnchor="middle" fill="#fef2f2" fontSize="8" fontWeight="800" fontFamily="sans-serif">
+            FIRE ALARM CONTROL PANEL
+          </text>
+          
+          {/* Backlit LCD Display */}
+          <rect x="62" y="80" width="116" height="34" rx="4" fill="#042f2e" stroke="#14b8a6" strokeWidth="1.2" />
+          <text x="70" y="94" fill="#2dd4bf" fontSize="7" fontWeight="700" fontFamily="monospace">
+            [SYS NORMAL] 24V OK
+          </text>
+          <text x="70" y="106" fill="#5eead4" fontSize="6.5" fontWeight="600" fontFamily="monospace">
+            ALL ZONES MONITORED
+          </text>
+
+          {/* Zone Indicator LED Banks (Zones 1 to 4) */}
+          <g transform="translate(64, 122)">
+            {/* Zone 1 */}
+            <circle cx="6" cy="6" r="3.5" fill="#22c55e" />
+            <text x="14" y="9" fill="#a1a1aa" fontSize="6" fontWeight="700">Z1 OK</text>
+            
+            {/* Zone 2 */}
+            <circle cx="62" cy="6" r="3.5" fill="#22c55e" />
+            <text x="70" y="9" fill="#a1a1aa" fontSize="6" fontWeight="700">Z2 OK</text>
+            
+            {/* Zone 3 */}
+            <circle cx="6" cy="20" r="3.5" fill="#22c55e" />
+            <text x="14" y="23" fill="#a1a1aa" fontSize="6" fontWeight="700">Z3 OK</text>
+            
+            {/* Zone 4 */}
+            <circle cx="62" cy="20" r="3.5" fill="#ef4444" />
+            <text x="70" y="23" fill="#ef4444" fontSize="6" fontWeight="700">ALARM</text>
+          </g>
+
+          {/* Keypad Buttons & Reset Key Hole */}
+          <g transform="translate(64, 154)">
+            <rect x="0" y="0" width="18" height="12" rx="2" fill="#27272a" stroke="#52525b" strokeWidth="0.8" />
+            <text x="9" y="8" textAnchor="middle" fill="#d4d4d8" fontSize="5" fontWeight="700">RESET</text>
+            
+            <rect x="22" y="0" width="18" height="12" rx="2" fill="#27272a" stroke="#52525b" strokeWidth="0.8" />
+            <text x="31" y="8" textAnchor="middle" fill="#d4d4d8" fontSize="5" fontWeight="700">SILENCE</text>
+            
+            <rect x="44" y="0" width="18" height="12" rx="2" fill="#b91c1c" stroke="#ef4444" strokeWidth="0.8" />
+            <text x="53" y="8" textAnchor="middle" fill="#ffffff" fontSize="5" fontWeight="700">EVAC</text>
+
+            {/* Panel Security Key Cylinder */}
+            <circle cx="98" cy="6" r="6" fill="#3f3f46" stroke="#71717a" strokeWidth="1" />
+            <line x1="98" y1="3" x2="98" y2="9" stroke="#18181b" strokeWidth="1.5" strokeLinecap="round" />
+          </g>
+
+          {/* Standard Mark */}
+          <text x="120" y="184" textAnchor="middle" fill="#71717a" fontSize="6" fontWeight="600" fontFamily="sans-serif">
+            MICROPROCESSOR • IS: 2189 / EN 54
+          </text>
+        </svg>
+      );
+
+    case 'manual-call-point':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          
+          {/* MCP Box Main Enclosure (Vibrant Emergency Red) */}
+          <rect x="62" y="50" width="116" height="140" rx="8" fill="#b91c1c" stroke="#7f1d1d" strokeWidth="2.5" />
+          <rect x="66" y="54" width="108" height="132" rx="6" fill="#dc2626" />
+
+          {/* Top Header Label */}
+          <rect x="74" y="60" width="92" height="18" rx="3" fill="#18181b" />
+          <text x="120" y="73" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="900" letterSpacing="1" fontFamily="sans-serif">
+            FIRE ALARM
+          </text>
+
+          {/* Center Operating / Break Glass Window Chamber */}
+          <rect x="74" y="84" width="92" height="66" rx="4" fill="#f4f4f5" stroke="#18181b" strokeWidth="2" />
+          
+          {/* Glass / Resettable Plastic Highlight Lines */}
+          <path d="M78 88 L162 146" stroke="#93c5fd" strokeWidth="1" opacity="0.6" />
+          <path d="M90 88 L162 136" stroke="#ffffff" strokeWidth="1" opacity="0.8" />
+
+          {/* Operating Arrows & Instruction */}
+          <g transform="translate(120, 114)">
+            {/* Center Push Element */}
+            <rect x="-18" y="-12" width="36" height="24" rx="3" fill="#18181b" />
+            <text x="0" y="2" textAnchor="middle" fill="#ef4444" fontSize="7" fontWeight="900" fontFamily="sans-serif">
+              PUSH
+            </text>
+            {/* Opposing black arrows */}
+            <polygon points="-30,0 -24,-5 -24,5" fill="#18181b" />
+            <polygon points="30,0 24,-5 24,5" fill="#18181b" />
+          </g>
+
+          <text x="120" y="142" textAnchor="middle" fill="#18181b" fontSize="6.5" fontWeight="800" fontFamily="sans-serif">
+            PRESS HERE TO ACTIVATE
+          </text>
+
+          {/* Bottom Test Key Jack & Compliance */}
+          <rect x="74" y="156" width="92" height="20" rx="2" fill="#7f1d1d" />
+          {/* Key slot */}
+          <rect x="116" y="161" width="8" height="3" rx="1" fill="#09090b" />
+          <text x="120" y="172" textAnchor="middle" fill="#fecaca" fontSize="6" fontWeight="700" fontFamily="sans-serif">
+            RESETTABLE • EN 54-11 / IS: 2189
+          </text>
+        </svg>
+      );
+
+    case 'k-type':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          {/* Base */}
+          <ellipse cx="120" cy="208" rx="34" ry="7" fill="#09090b" stroke="#3f3f46" strokeWidth="1.5" />
+          {/* Stainless Steel Cylinder Body */}
+          <path d="M88 88 C88 72 152 72 152 88 L152 196 C152 205 88 205 88 196 Z" fill="#27272a" stroke="#52525b" strokeWidth="1.5" />
+          {/* Metallic Specular */}
+          <path d="M94 90 C94 80 106 78 106 85 L106 195 C106 198 94 198 94 195 Z" fill="#ffffff" opacity="0.15" />
+          {/* Yellow Wet Chemical Class K Band */}
+          <rect x="88" y="105" width="64" height="32" rx="2" fill="#eab308" stroke="#ca8a04" strokeWidth="0.8" />
+          <text x="120" y="122" textAnchor="middle" fill="#713f12" fontSize="9" fontWeight="900">CLASS K / F</text>
+          <text x="120" y="131" textAnchor="middle" fill="#854d0e" fontSize="6.5" fontWeight="700">WET CHEMICAL</text>
+          {/* Stainless Valve & Wand Nozzle */}
+          <rect x="112" y="60" width="16" height="15" rx="2" fill="#d4d4d8" stroke="#71717a" strokeWidth="1" />
+          <circle cx="140" cy="62" r="8" fill="#18181b" stroke="#e4e4e7" strokeWidth="1.2" />
+          <line x1="140" y1="62" x2="140" y2="58" stroke="#ef4444" strokeWidth="1.5" />
+          <path d="M110 56 L86 36 L122 50 Z" fill="#e4e4e7" stroke="#a1a1aa" strokeWidth="1" />
+          {/* Long Spray Wand */}
+          <path d="M126 66 C150 72 165 95 165 135 L165 178" fill="none" stroke="#71717a" strokeWidth="4" />
+          <polygon points="161,178 169,178 165,195" fill="#f59e0b" stroke="#b45309" strokeWidth="1" />
+        </svg>
+      );
+
+    case 'wheeled-heavy-duty':
+      return (
+        <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+          <circle cx="120" cy="120" r="95" fill="#18181b" stroke="#27272a" strokeWidth="1" />
+          {/* Large Trolley Wheels */}
+          <circle cx="68" cy="180" r="28" fill="#09090b" stroke="#52525b" strokeWidth="4" />
+          <circle cx="68" cy="180" r="14" fill="#27272a" stroke="#71717a" strokeWidth="2" />
+          <line x1="68" y1="180" x2="110" y2="175" stroke="#71717a" strokeWidth="4" strokeLinecap="round" />
+          {/* Big Cylinder Body (25kg - 50kg) */}
+          <rect x="90" y="65" width="56" height="125" rx="14" fill="#b91c1c" stroke="#450a0a" strokeWidth="2" />
+          {/* Specular */}
+          <rect x="96" y="72" width="10" height="110" rx="4" fill="#ffffff" opacity="0.2" />
+          {/* Trolley Push Handle Frame */}
+          <path d="M100 65 L100 35 C100 30 136 30 136 35 L136 65" fill="none" stroke="#71717a" strokeWidth="4" />
+          {/* Wheel Axle Support */}
+          <rect x="80" y="165" width="30" height="8" rx="2" fill="#3f3f46" />
+          {/* Long Discharge Hose & Horn */}
+          <path d="M142 75 C168 85 175 125 170 160 L166 185" fill="none" stroke="#18181b" strokeWidth="5.5" strokeLinecap="round" />
+          <polygon points="160,185 172,185 166,204" fill="#3f3f46" stroke="#71717a" strokeWidth="1" />
+          {/* Label */}
+          <rect x="94" y="105" width="48" height="34" rx="2" fill="#09090b" stroke="#3f3f46" strokeWidth="0.8" />
+          <text x="118" y="120" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="800">25 KG</text>
+          <text x="118" y="131" textAnchor="middle" fill="#ef4444" fontSize="6" fontWeight="700">WHEELED TROLLEY</text>
+        </svg>
+      );
+
     default:
       return (
         <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-zinc-900 rounded-xl">

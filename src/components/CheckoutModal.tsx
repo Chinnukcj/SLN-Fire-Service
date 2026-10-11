@@ -62,10 +62,14 @@ export const CheckoutModal: React.FC = () => {
     const formattedTotal = new Intl.NumberFormat('en-IN').format(grandTotal);
 
     let itemsText = items
-      .map(
-        (item, idx) =>
-          `${idx + 1}. ${item.name} (${item.capacityLabel})\n   Qty: ${item.quantity} | Unit Base: ₹${new Intl.NumberFormat('en-IN').format(item.unitPrice)} | Subtotal: ₹${new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}`
-      )
+      .map((item, idx) => {
+        const sType = item.serviceType === 'buy-new' ? 'Buy New' : 'Refill';
+        const mat = item.material ? ` - ${item.material}` : '';
+        const priceInfo = item.isPriceOnRequest
+          ? 'Price on Request / RFQ'
+          : `Unit Base: ₹${new Intl.NumberFormat('en-IN').format(item.unitPrice)} | Subtotal: ₹${new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}`;
+        return `${idx + 1}. [${sType}] ${item.name} [${item.capacityLabel}${mat}]\n   Qty: ${item.quantity} | ${priceInfo}`;
+      })
       .join('\n');
 
     return (
@@ -94,7 +98,7 @@ TAX & PRICE BREAKDOWN:
 • Estimated Grand Total Quote: ₹${formattedTotal}
 
 SPECIAL REQUIREMENTS / SCOPE:
-${requirements ? `• ${requirements}` : '• Please verify current stock availability and official quote.'}
+${requirements ? `• ${requirements}` : '• Please verify current stock availability, formal quotation, and dispatch schedule.'}
 
 Direct Contact:
 SLN Fire Service | Dhanush
@@ -113,10 +117,14 @@ Address: #18/1 Arehalli, Ittumadu Main Road, Near Basavanna Temple, Bengaluru 56
     const formattedTotal = new Intl.NumberFormat('en-IN').format(grandTotal);
 
     const itemsSummary = items
-      .map(
-        (item, idx) =>
-          `${idx + 1}. *${item.name}* (${item.capacityLabel}) × ${item.quantity} = ₹${new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}`
-      )
+      .map((item, idx) => {
+        const sType = item.serviceType === 'buy-new' ? 'Buy New' : 'Refill';
+        const mat = item.material ? ` - ${item.material}` : '';
+        const priceStr = item.isPriceOnRequest
+          ? 'Price on Request'
+          : `₹${new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}`;
+        return `${idx + 1}. *[${sType}]* ${item.name} (${item.capacityLabel}${mat}) × ${item.quantity} = ${priceStr}`;
+      })
       .join('\n');
 
     const message = (
@@ -259,21 +267,56 @@ ${requirements ? `*Notes / Scope:* ${requirements}\n\n` : ''}Please verify stock
                         {items.map((item) => (
                           <tr key={item.id} className="hover:bg-zinc-900/30 transition-colors">
                             <td className="py-3 px-4">
-                              <span className="font-semibold text-zinc-100 block">{item.name}</span>
-                              <span className="text-[11px] text-amber-400 font-mono">{item.capacityLabel}</span>
+                              <div className="flex items-center gap-2.5">
+                                {item.imageUrl && (
+                                  <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 shrink-0 p-0.5 overflow-hidden">
+                                    <img
+                                      src={item.imageUrl}
+                                      alt={item.name}
+                                      className="w-full h-full object-contain"
+                                      onError={(e) => {
+                                        const filename = item.imageUrl?.split('/').pop();
+                                        if (filename && !e.currentTarget.src.endsWith(`/images/${filename}`)) {
+                                          e.currentTarget.src = `/images/${filename}`;
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <span className="font-semibold text-zinc-100 block">{item.name}</span>
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    <span className="text-[10px] font-mono px-1 rounded bg-zinc-800 text-zinc-300 font-semibold">
+                                      {item.serviceType === 'buy-new' ? 'Buy New' : 'Refill'}
+                                    </span>
+                                    <span className="text-[11px] text-amber-400 font-mono">{item.capacityLabel}</span>
+                                    {item.material && (
+                                      <span className="text-[10px] text-zinc-400 font-mono">({item.material})</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
                             </td>
                             <td className="py-3 px-3 text-zinc-400 font-mono text-[11px]">
                               <span>Class {item.fireClass}</span>
                               <span className="block text-[10px] text-zinc-400">{item.standard.split('/')[0]}</span>
                             </td>
                             <td className="py-3 px-3 text-right font-mono text-zinc-300">
-                              ₹{new Intl.NumberFormat('en-IN').format(item.unitPrice)}
+                              {item.isPriceOnRequest ? (
+                                <span className="text-amber-400 text-[11px]">Quote on Req.</span>
+                              ) : (
+                                `₹${new Intl.NumberFormat('en-IN').format(item.unitPrice)}`
+                              )}
                             </td>
                             <td className="py-3 px-3 text-center font-mono font-semibold text-white">
                               {item.quantity}
                             </td>
                             <td className="py-3 px-4 text-right font-mono font-bold text-white">
-                              ₹{new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}
+                              {item.isPriceOnRequest ? (
+                                <span className="text-amber-400 text-[11px]">POR</span>
+                              ) : (
+                                `₹${new Intl.NumberFormat('en-IN').format(item.unitPrice * item.quantity)}`
+                              )}
                             </td>
                           </tr>
                         ))}
