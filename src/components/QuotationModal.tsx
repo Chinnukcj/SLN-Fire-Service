@@ -163,7 +163,7 @@ export const QuotationModal: React.FC = () => {
         <div className="quotation-scroll-area flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 bg-zinc-800/40 flex justify-center">
           {/* A4 PAPER CONTAINER */}
           <div
-            id="printable-quotation-root"
+            id="printable-quotation"
             className="w-full max-w-[210mm] min-h-[297mm] bg-white text-black p-8 sm:p-10 shadow-2xl rounded-sm flex flex-col justify-between"
             style={{
               fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
