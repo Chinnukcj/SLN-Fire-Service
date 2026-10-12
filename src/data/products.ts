@@ -35,6 +35,7 @@ export interface Product {
     temperatureRange?: string;
   };
   badgeColor?: string;
+  contactOnly?: boolean;
 }
 
 export const PRODUCTS: Product[] = [
@@ -109,6 +110,7 @@ export const PRODUCTS: Product[] = [
     fireClass: 'ABC',
     standard: 'IS: 15683 / 24x7 Unattended Protection',
     supportedServices: ['buy-new', 'refill'],
+    contactOnly: true,
     description: 'Autonomous ceiling-mounted protection unit equipped with temperature-activated 68°C quartzoid sprinkler bulb. Discharges instantaneously without human intervention.',
     idealUses: [
       'Unattended transformer compartments',
@@ -121,9 +123,8 @@ export const PRODUCTS: Product[] = [
       {
         label: '5 KG',
         value: '5kg',
-        buyNewPrice: 1600,
-        refillPrice: 445,
-        basePrice: 1600,
+        buyNewPrice: 'POR',
+        refillPrice: 'POR',
         specs: 'Covers up to 3.5 - 4 sq. meters | Auto 68°C red bulb trigger'
       }
     ],
@@ -377,59 +378,6 @@ export const PRODUCTS: Product[] = [
       dischargeTime: '12 to 16 Seconds',
       testPressure: '35 Bar',
       temperatureRange: '-20°C to +55°C'
-    }
-  },
-  {
-    id: 'wheeled-heavy-duty',
-    name: 'Dry Chemical Wheeled Extinguisher',
-    tagline: 'High-Capacity Mobile Industrial Chemical Extinguisher',
-    category: 'extinguisher',
-    fireClass: 'ABC',
-    standard: 'IS: 16018 / Heavy Industrial Trolley Standard',
-    supportedServices: ['buy-new', 'refill'],
-    description: 'High-output mobile fire suppression unit mounted on all-terrain steel wheels with reinforced 5-meter discharge hose and shut-off applicator horn for large-scale industrial hazards.',
-    idealUses: [
-      'Manufacturing factories & warehouse floors',
-      'Petrochemical refineries & fuel storage farms',
-      'Airport aprons & aircraft maintenance hangars',
-      'Power generation plants & transformer yards',
-      'Paint & flammable solvent processing plants'
-    ],
-    capacities: [
-      {
-        label: '25 KG Trolley',
-        value: '25kg',
-        buyNewPrice: 12500,
-        refillPrice: 1850,
-        basePrice: 12500,
-        specs: 'Single operator high-mobility unit'
-      },
-      {
-        label: '50 KG Trolley',
-        value: '50kg',
-        buyNewPrice: 18500,
-        refillPrice: 3500,
-        basePrice: 18500,
-        specs: 'Heavy industrial floor coverage'
-      },
-      {
-        label: '75 KG Trolley',
-        value: '75kg',
-        buyNewPrice: 24500,
-        refillPrice: 5200,
-        basePrice: 24500,
-        specs: 'Maximum coverage bulk suppression'
-      }
-    ],
-    images: [
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/Dry-chemical-wheeled-1-25kg.png'
-    ],
-    technicalSpecs: {
-      operatingPressure: '15 Bar',
-      dischargeRange: '8 to 12 Meters',
-      dischargeTime: '40 to 65 Seconds',
-      testPressure: '35 Bar',
-      temperatureRange: '-30°C to +60°C'
     }
   },
   {

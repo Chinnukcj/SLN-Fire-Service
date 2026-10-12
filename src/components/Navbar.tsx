@@ -1,35 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag, Menu, X, Printer, FileText } from 'lucide-react';
+import { ShoppingBag, Printer } from 'lucide-react';
 import { CompanyLogo } from './CompanyLogo';
 
 export const Navbar: React.FC<{
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}> = ({ activeTab, setActiveTab }) => {
-  const { totalUnits, setIsCartOpen, setIsQuotationOpen, subtotal } = useCart();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { id: 'extinguishers', label: 'Extinguishers' },
-    { id: 'refilling', label: 'Refilling' },
-    { id: 'equipment', label: 'Safety Gear' },
-    { id: 'classifications', label: 'Classifications' },
-    { id: 'contact', label: 'Contact' }
-  ];
-
-  const handleNavClick = (id: string) => {
-    setActiveTab(id);
-    setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+}> = () => {
+  const { totalUnits, setIsCartOpen, setIsQuotationOpen } = useCart();
 
   return (
     <header className="sticky top-0 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-800/80">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between gap-8 h-20">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between gap-6 h-20">
         {/* Zone 1: Brand Wordmark with Official Logo */}
         <a
           href="#"
@@ -50,20 +32,14 @@ export const Navbar: React.FC<{
           </div>
         </a>
 
-        {/* Zone 2: 4-5 single-line clean nav links */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-zinc-400">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => handleNavClick(link.id)}
-              className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
-                activeTab === link.id ? 'text-white' : ''
-              }`}
-            >
-              {link.label}
-            </button>
-          ))}
-        </nav>
+        {/* Zone 2: Premium Stylish Line "Safety is our priority" */}
+        <div className="hidden md:flex items-center justify-center gap-3 lg:gap-4 px-2 select-none">
+          <span className="h-[1px] w-6 lg:w-10 bg-gradient-to-r from-transparent via-amber-400/30 to-amber-400/80" />
+          <span className="font-luxury text-xs lg:text-sm tracking-[0.24em] uppercase font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 drop-shadow-[0_2px_12px_rgba(251,191,36,0.22)] whitespace-nowrap">
+            Safety is our priority
+          </span>
+          <span className="h-[1px] w-6 lg:w-10 bg-gradient-to-l from-transparent via-amber-400/30 to-amber-400/80" />
+        </div>
 
         {/* Zone 3: Actions (Quotation Letterhead & Inquiry Cart Buttons) */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -91,44 +67,15 @@ export const Navbar: React.FC<{
               </span>
             )}
           </button>
-
-          {/* Mobile hamburger toggle */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-            aria-label="Toggle Menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-zinc-800 bg-[#09090b] px-6 py-4 space-y-3">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => handleNavClick(link.id)}
-              className="block w-full text-left py-2 text-xs font-semibold text-zinc-300 hover:text-white transition-colors"
-            >
-              {link.label}
-            </button>
-          ))}
-          <div className="pt-2 border-t border-zinc-800 space-y-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setIsQuotationOpen(true);
-              }}
-              className="w-full py-2.5 px-4 bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2"
-            >
-              <Printer className="w-4 h-4" />
-              <span>View &amp; Print Letterhead Quotation</span>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Mobile Subtle Tagline Banner */}
+      <div className="md:hidden flex items-center justify-center py-2 px-4 bg-zinc-950/80 border-t border-zinc-800/60 select-none">
+        <span className="font-luxury text-[11px] tracking-[0.2em] uppercase font-semibold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200">
+          Safety is our priority
+        </span>
+      </div>
     </header>
   );
 };

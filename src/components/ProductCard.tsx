@@ -22,16 +22,19 @@ import {
 
 interface ProductCardProps {
   product: Product;
+  forcedServiceType?: ServiceType;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedServiceType }) => {
   const { addItem } = useCart();
 
   const supportsRefill =
     product.supportedServices?.includes('refill') ?? (product.category === 'extinguisher');
 
-  // Service Type state: 'buy-new' or 'refill'
-  const [serviceType, setServiceType] = useState<ServiceType>('buy-new');
+  // Service Type state: 'buy-new' or 'refill' - forced if supplied by category tab
+  const [internalServiceType, setInternalServiceType] = useState<ServiceType>('buy-new');
+  const serviceType: ServiceType = forcedServiceType || internalServiceType;
+  const setServiceType = setInternalServiceType;
 
   // Selected capacity
   const [selectedCapacityIndex, setSelectedCapacityIndex] = useState(0);
@@ -168,7 +171,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <>
-      <div className="bg-[#121215] border border-zinc-800/80 rounded-2xl flex flex-col justify-between hover:border-zinc-700 transition-all duration-300 shadow-xl overflow-hidden group">
+      <div className="bg-[#121215] border border-zinc-800/80 rounded-2xl flex flex-col justify-between hover:border-zinc-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
         <div>
           {/* Card Visual Header */}
           <div className="relative p-5 pb-2">
@@ -270,56 +273,58 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               </p>
             </div>
 
-            {/* 1. SERVICE TYPE TOGGLE (Buy New vs Refill) */}
-            <div className="mb-3.5">
-              <label className="text-[11px] font-semibold text-zinc-400 block mb-1.5 flex items-center justify-between">
-                <span>Service Type</span>
-                {supportsRefill ? (
-                  <span className="text-[10px] text-amber-400 font-mono">
-                    {serviceType === 'buy-new' ? 'Supply New Cylinder' : 'Recharge & Refill Service'}
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-zinc-500 font-mono">Standard Hardware Supply</span>
-                )}
-              </label>
+            {/* 1. SERVICE TYPE TOGGLE (Buy New vs Refill) - Hidden if tab forces service type */}
+            {!forcedServiceType && (
+              <div className="mb-3.5">
+                <label className="text-[11px] font-semibold text-zinc-400 block mb-1.5 flex items-center justify-between">
+                  <span>Service Type</span>
+                  {supportsRefill ? (
+                    <span className="text-[10px] text-amber-400 font-mono">
+                      {serviceType === 'buy-new' ? 'Supply New Cylinder' : 'Recharge & Refill Service'}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-zinc-500 font-mono">Standard Hardware Supply</span>
+                  )}
+                </label>
 
-              {supportsRefill ? (
-                <div className="grid grid-cols-2 p-1 bg-zinc-950 border border-zinc-800 rounded-xl gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setServiceType('buy-new')}
-                    className={`py-1.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                      serviceType === 'buy-new'
-                        ? 'bg-zinc-100 text-zinc-950 shadow-md font-bold'
-                        : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
-                    }`}
-                  >
-                    <Package className="w-3.5 h-3.5" />
-                    <span>Buy New</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setServiceType('refill')}
-                    className={`py-1.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                      serviceType === 'refill'
-                        ? 'bg-amber-400 text-zinc-950 shadow-md font-bold'
-                        : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
-                    }`}
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Refill</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="py-1.5 px-3 bg-zinc-950/80 border border-zinc-800 rounded-xl text-xs font-medium text-zinc-300 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Package className="w-3.5 h-3.5 text-amber-400" />
-                    <span className="font-semibold">Buy New (Certified Unit)</span>
+                {supportsRefill ? (
+                  <div className="grid grid-cols-2 p-1 bg-zinc-950 border border-zinc-800 rounded-xl gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setServiceType('buy-new')}
+                      className={`py-1.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                        serviceType === 'buy-new'
+                          ? 'bg-zinc-100 text-zinc-950 shadow-md font-bold'
+                          : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+                      }`}
+                    >
+                      <Package className="w-3.5 h-3.5" />
+                      <span>Buy New</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setServiceType('refill')}
+                      className={`py-1.5 px-3 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                        serviceType === 'refill'
+                          ? 'bg-amber-400 text-zinc-950 shadow-md font-bold'
+                          : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+                      }`}
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Refill</span>
+                    </button>
                   </div>
-                  <span className="text-[10px] text-zinc-500 font-mono">Refill N/A</span>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="py-1.5 px-3 bg-zinc-950/80 border border-zinc-800 rounded-xl text-xs font-medium text-zinc-300 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Package className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="font-semibold">Buy New (Certified Unit)</span>
+                    </div>
+                    <span className="text-[10px] text-zinc-500 font-mono">Refill N/A</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* 2. CAPACITY SELECTOR */}
             <div className="mb-3.5">
@@ -384,7 +389,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
 
             {/* 4. QUANTITY & BASE / BREAKDOWN CALCULATION */}
-            {isPriceOnRequest ? (
+            {product.contactOnly ? (
+              /* CONTACT IF NEEDED BANNER - NO PRICE, NO QUANTITY */
+              <div className="my-3 py-3 px-4 bg-zinc-900/90 border border-amber-500/30 rounded-xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-zinc-400">Pricing & Order</span>
+                  <span className="text-xs font-bold text-amber-400 font-mono tracking-wide">
+                    Contact if needed
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Automatic modular ceiling units require site survey, ceiling height & hazard volume consultation.
+                </p>
+              </div>
+            ) : isPriceOnRequest ? (
               /* PRICE ON REQUEST BANNER (Numerical calculations hidden) */
               <div className="my-3 py-3 px-4 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
@@ -543,50 +561,81 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Card Actions Bottom */}
         <div className="p-5 pt-2 space-y-2">
-          {/* Add to Quote Button */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
-              addedAnimation
-                ? 'bg-emerald-600 text-white'
-                : 'bg-zinc-100 hover:bg-white text-zinc-950 font-bold shadow-sm'
-            }`}
-          >
-            {addedAnimation ? (
-              <>
-                <Check className="w-4 h-4" />
-                Added to Quotation!
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-4 h-4" />
-                <span>
-                  Add {quantity} [{serviceLabel}] to Quote
+          {product.contactOnly ? (
+            /* CONTACT IF NEEDED ACTIONS */
+            <>
+              <a
+                href={`https://wa.me/919945437741?text=${encodeURIComponent(
+                  `Hi SLN Fire Service, I am inquiring about [${serviceLabel}] [${product.name}] [${specLabel}]. Contact if needed - please share details, site survey, and quotation.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-300 text-zinc-950 flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-400/20"
+              >
+                <MessageSquare className="w-4 h-4 text-zinc-950" />
+                <span>Contact if needed</span>
+              </a>
+
+              <a
+                href="tel:9945437741"
+                className="w-full py-2 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors"
+              >
+                <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
+                <span>Call: +91 9945437741</span>
+              </a>
+
+              <p className="text-[10px] text-zinc-500 text-center font-mono truncate px-1">
+                Direct Inquiry: [{serviceLabel}] [{product.name}]
+              </p>
+            </>
+          ) : (
+            <>
+              {/* Add to Quote Button */}
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                  addedAnimation
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-zinc-100 hover:bg-white text-zinc-950 font-bold shadow-sm'
+                }`}
+              >
+                {addedAnimation ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    Added to Quotation!
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>
+                      Add {quantity} [{serviceLabel}] to Quote
+                    </span>
+                  </>
+                )}
+              </button>
+
+              {/* DYNAMIC WHATSAPP BUTTON (Prompt Requirement 3) */}
+              <button
+                type="button"
+                onClick={handleQuickWhatsApp}
+                title={buildWhatsAppMessage()}
+                className="w-full py-2.5 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-200 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors group/wa shadow-sm"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">
+                  {isPriceOnRequest
+                    ? 'Request Quote on WhatsApp (9945437741)'
+                    : `WhatsApp: [${serviceLabel}] [${specLabel}]`}
                 </span>
-              </>
-            )}
-          </button>
+              </button>
 
-          {/* DYNAMIC WHATSAPP BUTTON (Prompt Requirement 3) */}
-          <button
-            type="button"
-            onClick={handleQuickWhatsApp}
-            title={buildWhatsAppMessage()}
-            className="w-full py-2.5 px-3 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-200 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center gap-2 transition-colors group/wa shadow-sm"
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="truncate">
-              {isPriceOnRequest
-                ? 'Request Quote on WhatsApp (9945437741)'
-                : `WhatsApp: [${serviceLabel}] [${specLabel}]`}
-            </span>
-          </button>
-
-          {/* Small live text preview of the WhatsApp quote draft */}
-          <p className="text-[10px] text-zinc-500 text-center font-mono truncate px-1">
-            RFQ: [{serviceLabel}] [{product.name}] [{specLabel}] - Qty: {quantity}
-          </p>
+              {/* Small live text preview of the WhatsApp quote draft */}
+              <p className="text-[10px] text-zinc-500 text-center font-mono truncate px-1">
+                RFQ: [{serviceLabel}] [{product.name}] [{specLabel}] - Qty: {quantity}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -718,22 +767,38 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
               {/* Quick Actions in Modal */}
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={handleQuickWhatsApp}
-                  className="flex-1 sm:flex-none py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
-                >
-                  <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  {isPriceOnRequest ? 'Request Quote on WhatsApp' : 'Inquire on WhatsApp'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="flex-1 sm:flex-none py-2.5 px-5 bg-zinc-100 hover:bg-white text-zinc-950 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  Add to Cart
-                </button>
+                {product.contactOnly ? (
+                  <a
+                    href={`https://wa.me/919945437741?text=${encodeURIComponent(
+                      `Hi SLN Fire Service, I am inquiring about [${serviceLabel}] [${product.name}] [${specLabel}]. Contact if needed - please share details, site survey, and quotation.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-none py-2.5 px-5 bg-amber-400 hover:bg-amber-300 text-zinc-950 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-400/20"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-zinc-950" />
+                    <span>Contact if needed</span>
+                  </a>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleQuickWhatsApp}
+                      className="flex-1 sm:flex-none py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                      {isPriceOnRequest ? 'Request Quote on WhatsApp' : 'Inquire on WhatsApp'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      className="flex-1 sm:flex-none py-2.5 px-5 bg-zinc-100 hover:bg-white text-zinc-950 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5" />
+                      Add to Cart
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
