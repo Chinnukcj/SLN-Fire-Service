@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useCart } from '../context/CartContext';
 import { CompanyLogo } from './CompanyLogo';
 import {
@@ -41,8 +42,120 @@ export const QuotationModal: React.FC = () => {
 
   if (!isQuotationOpen) return null;
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrintQuotation = () => {
+    const printElem = document.getElementById('printable-quotation');
+    if (!printElem) {
+      window.print();
+      return;
+    }
+
+    // Remove any previously created print iframe
+    const existingFrame = document.getElementById('sln-print-iframe');
+    if (existingFrame) {
+      existingFrame.remove();
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.id = 'sln-print-iframe';
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.visibility = 'hidden';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) {
+      window.print();
+      return;
+    }
+
+    // Collect all stylesheets and style blocks from current page
+    let stylesHtml = '';
+    document.querySelectorAll('style, link[rel="stylesheet"]').forEach((node) => {
+      stylesHtml += node.outerHTML;
+    });
+
+    const contentHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <title>SLN Fire Service - Official Quotation</title>
+          ${stylesHtml}
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 8mm;
+            }
+            *, *::before, *::after {
+              box-sizing: border-box;
+            }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff !important;
+              color: #000000 !important;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            #printable-quotation {
+              width: 100% !important;
+              max-width: 100% !important;
+              margin: 0 auto !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              background: #ffffff !important;
+              color: #000000 !important;
+            }
+            table {
+              border-collapse: collapse !important;
+              width: 100% !important;
+            }
+            th, td {
+              border-color: #000000 !important;
+              color: #000000 !important;
+            }
+            .border-black {
+              border-color: #000000 !important;
+            }
+            .text-red-600 {
+              color: #dc2626 !important;
+            }
+            .border-red-600 {
+              border-color: #dc2626 !important;
+            }
+            tr, .qm-keep {
+              break-inside: avoid !important;
+              page-break-inside: avoid !important;
+            }
+          </style>
+        </head>
+        <body class="bg-white text-black p-0 m-0">
+          <div style="width: 100%; max-width: 194mm; margin: 0 auto; background: #ffffff; color: #000000;">
+            ${printElem.outerHTML}
+          </div>
+        </body>
+      </html>
+    `;
+
+    doc.open();
+    doc.write(contentHtml);
+    doc.close();
+
+    // Trigger isolated print after iframe settles
+    setTimeout(() => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch (err) {
+        console.error('Error invoking isolated iframe print:', err);
+        window.print();
+      }
+    }, 250);
   };
 
   const formatInr = (val: number) => {
@@ -52,13 +165,23 @@ export const QuotationModal: React.FC = () => {
     });
   };
 
-  return (
-    <div className="quotation-modal-backdrop fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6">
-      <div className="quotation-modal-dialog bg-zinc-900 border border-zinc-800 rounded-2xl max-w-5xl w-full text-zinc-100 shadow-2xl flex flex-col max-h-[96vh] overflow-hidden">
+  const modalContent = (
+    <div
+      id="quotation-print-root"
+      className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4 md:p-6 print:static print:inset-auto print:overflow-visible print:h-auto print:bg-white print:p-0 print:m-0 print:block"
+    >
+      {/* Dark backdrop with qm-no-print and print:hidden */}
+      <div
+        className="qm-no-print print:hidden fixed inset-0 bg-black/85 backdrop-blur-md"
+        onClick={() => setIsQuotationOpen(false)}
+        aria-hidden="true"
+      />
+
+      <div className="relative quotation-modal-dialog bg-zinc-900 border border-zinc-800 rounded-2xl max-w-5xl w-full text-zinc-100 shadow-2xl flex flex-col max-h-[96vh] overflow-hidden print:static print:bg-transparent print:border-none print:shadow-none print:max-w-full print:w-full print:max-h-none print:h-auto print:overflow-visible print:p-0 print:m-0">
         {/* =================================================================== */}
         {/* SCREEN-ONLY TOOLBAR / CONTROLS (HIDDEN DURING PRINT)                */}
         {/* =================================================================== */}
-        <div className="no-print p-4 sm:p-5 border-b border-zinc-800 bg-zinc-950/90 flex flex-wrap items-center justify-between gap-4 shrink-0">
+        <div className="qm-no-print print:hidden no-print p-4 sm:p-5 border-b border-zinc-800 bg-zinc-950/90 flex flex-wrap items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400">
               <FileText className="w-5 h-5" />
@@ -78,7 +201,7 @@ export const QuotationModal: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={handlePrint}
+              onClick={handlePrintQuotation}
               className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-amber-400/20 flex items-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
             >
               <Printer className="w-4 h-4" />
@@ -99,7 +222,7 @@ export const QuotationModal: React.FC = () => {
         {/* =================================================================== */}
         {/* EDITABLE DETAILS BAR FOR USER INPUT (CUSTOMER, ATTENTION, DATE)     */}
         {/* =================================================================== */}
-        <div className="no-print p-4 bg-zinc-950/50 border-b border-zinc-800/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs shrink-0">
+        <div className="qm-no-print print:hidden no-print p-4 bg-zinc-950/50 border-b border-zinc-800/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs shrink-0">
           <div>
             <label className="block text-[11px] font-semibold text-zinc-400 mb-1 flex items-center gap-1">
               <Building2 className="w-3 h-3 text-amber-400" />
@@ -160,17 +283,19 @@ export const QuotationModal: React.FC = () => {
         {/* =================================================================== */}
         {/* SCROLLABLE PREVIEW CONTAINER (CONTAINING PRINTABLE ROOT)             */}
         {/* =================================================================== */}
-        <div className="quotation-scroll-area flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 bg-zinc-800/40 flex justify-center">
-          {/* A4 PAPER CONTAINER */}
-          <div
-            id="printable-quotation"
-            className="w-full max-w-[210mm] bg-white text-black p-8 mx-auto shadow-2xl rounded-sm"
-            style={{
-              fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-              color: '#000000',
-              backgroundColor: '#ffffff'
-            }}
-          >
+        <div className="quotation-scroll-area flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 bg-zinc-800/40 flex justify-center print:overflow-visible print:p-0 print:bg-transparent print:m-0">
+          {/* SHEET WRAPPING CONTAINER */}
+          <div className="qm-sheet-wrap w-full flex justify-center print:m-0 print:p-0 print:w-full print:max-w-none">
+            {/* A4 PAPER CONTAINER */}
+            <div
+              id="printable-quotation"
+              className="bg-white text-black w-full max-w-[210mm] mx-auto p-[10mm] text-[11px] leading-snug font-sans shadow-lg print:shadow-none print:p-0 print:max-w-full print:w-full"
+              style={{
+                fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+                color: '#000000',
+                backgroundColor: '#ffffff'
+              }}
+            >
             {/* =============================================================== */}
             {/* 1. TOP HEADER (3-COLUMN GRID)                                   */}
             {/* =============================================================== */}
@@ -258,8 +383,8 @@ export const QuotationModal: React.FC = () => {
             </div>
 
             {/* Salutation, Subject & Attention */}
-            <div className="mb-3 space-y-1 text-xs text-black">
-              <p className="text-black">Dear Sir/Madam,</p>
+            <div className="mb-2 space-y-0.5 text-xs text-black">
+              <p className="text-black font-medium">Dear Sir/Madam,</p>
               <p className="font-extrabold text-black tracking-wide text-xs">
                 Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS
               </p>
@@ -269,8 +394,8 @@ export const QuotationModal: React.FC = () => {
             </div>
 
             {/* Intro Text */}
-            <p className="text-sm text-black leading-relaxed mb-4 text-justify">
-              Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
+            <p className="text-xs text-black leading-relaxed mb-3 text-justify font-medium">
+              With Reference to the Discussion our Sales Executive {salesExecutive || 'Mr. JAGADISH'}, had, we are pleased to quote our lowest rate for the following items:
             </p>
 
             {/* =============================================================== */}
@@ -393,118 +518,126 @@ export const QuotationModal: React.FC = () => {
               </table>
             </div>
 
-            {/* =============================================================== */}
-            {/* 4. TERMS & CONDITIONS SECTION                                    */}
-            {/* =============================================================== */}
-            <div className="mt-8 pt-4 border-t border-black bg-white text-black">
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                {/* Left Side */}
-                <div className="space-y-1">
-                  <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
-                    WOULD YOU GIVE US ORDER...?
-                  </h4>
-                  <ol className="list-none space-y-0.5 text-black text-[11px]">
-                    <li>1) We are fire extinguishers sales and service</li>
-                    <li>2) We will give all products with high class quality</li>
-                    <li>3) Our products will be supplied with ISI and Test certificate</li>
-                    <li>4) We have 100+ satisfied clients</li>
-                    <li>5) 50% Advance Payment</li>
-                  </ol>
-                </div>
-
-                {/* Right Side */}
-                <div className="space-y-1">
-                  <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
-                    TERMS &amp; CONDITION
-                  </h4>
-                  <ol className="list-none space-y-0.5 text-black text-[11px]">
-                    <li>1) GSTIN @ 18% extra</li>
-                    <li>2) Warranty 1 year</li>
-                    <li>3) Delivery within 12 hours</li>
-                    <li>4) Payment after installation of fire extinguishers</li>
-                    <li>5) Quotation valid for 30 days.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-
-            {/* =============================================================== */}
-            {/* 5. SIGNATORY, TAGLINE & OFFICIAL FOOTER                         */}
-            {/* =============================================================== */}
-            <div className="mt-6 pt-2 bg-white text-black">
-              {/* Signatory Box (Bottom LEFT) */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-3">
-                <div className="text-left">
-                  <p className="text-xs text-black font-medium">Yours truly,</p>
-                  <p className="text-xs font-extrabold text-black uppercase tracking-wider mt-0.5">
-                    For SLN FIRE SERVICE
-                  </p>
-                  <div className="h-12 flex items-center justify-start">
-                    <span className="text-[10px] text-gray-500 font-mono italic">
-                      [Official Stamp / Seal]
-                    </span>
+            {/* Wrap the signatory and bottom terms/address blocks with the class "qm-keep" to prevent page breaks */}
+            <div className="qm-keep">
+              {/* =============================================================== */}
+              {/* 4. TERMS & CONDITIONS SECTION                                    */}
+              {/* =============================================================== */}
+              <div className="qm-keep mt-8 pt-4 border-t border-black bg-white text-black">
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  {/* Left Side */}
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
+                      WOULD YOU GIVE US ORDER...?
+                    </h4>
+                    <ol className="list-none space-y-0.5 text-black text-[11px]">
+                      <li>1) We are fire extinguishers sales and service</li>
+                      <li>2) We will give all products with high class quality</li>
+                      <li>3) Our products will be supplied with ISI and Test certificate</li>
+                      <li>4) We have 100+ satisfied clients</li>
+                      <li>5) 50% Advance Payment</li>
+                    </ol>
                   </div>
-                  <p className="text-xs font-bold text-black border-t border-black pt-0.5 inline-block min-w-[150px]">
-                    Authorized Signatory
-                  </p>
+
+                  {/* Right Side */}
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
+                      TERMS &amp; CONDITION
+                    </h4>
+                    <ol className="list-none space-y-0.5 text-black text-[11px]">
+                      <li>1) GSTIN @ 18% extra</li>
+                      <li>2) Warranty 1 year</li>
+                      <li>3) Delivery within 12 hours</li>
+                      <li>4) Payment after installation of fire extinguishers</li>
+                      <li>5) Quotation valid for 30 days.</li>
+                    </ol>
+                  </div>
                 </div>
               </div>
 
-              {/* Note: Perfectly CENTERED at the bottom */}
-              <div className="text-center text-[10px] text-gray-600 italic py-1">
-                Note:- Prices are subject to change without any prior intimation
-              </div>
+              {/* =============================================================== */}
+              {/* 5. SIGNATORY, TAGLINE & OFFICIAL FOOTER                         */}
+              {/* =============================================================== */}
+              <div className="qm-keep mt-6 pt-2 bg-white text-black">
+                {/* Signatory Box (Bottom LEFT) */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-3">
+                  <div className="text-left">
+                    <p className="text-xs text-black font-medium">Yours truly,</p>
+                    <p className="text-xs font-extrabold text-black uppercase tracking-wider mt-0.5">
+                      For SLN FIRE SERVICE
+                    </p>
+                    <div className="h-12 flex items-center justify-start">
+                      <span className="text-[10px] text-gray-500 font-mono italic">
+                        [Official Stamp / Seal]
+                      </span>
+                    </div>
+                    <p className="text-xs font-bold text-black border-t border-black pt-0.5 inline-block min-w-[150px]">
+                      Authorized Signatory
+                    </p>
+                  </div>
+                </div>
 
-              {/* Bottom Center Bold Tag */}
-              <div className="text-center py-1 border-t border-b border-black my-2">
-                <span className="font-black text-xs tracking-widest text-black uppercase">
-                  SAFETY IS OUR PRIORITY
-                </span>
-              </div>
+                {/* Note: Perfectly CENTERED at the bottom */}
+                <div className="text-center text-[10px] text-gray-600 italic py-1">
+                  Note:- Prices are subject to change without any prior intimation
+                </div>
 
-              {/* Bottom Contact Details Footer with exact updated address */}
-              <div className="text-center text-[10px] text-black leading-normal space-y-0.5 pt-1">
-                <p className="font-semibold text-black">
-                  #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka
-                </p>
-                <p className="font-semibold font-mono text-black">
-                  Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
-                </p>
+                {/* Bottom Center Bold Tag */}
+                <div className="text-center py-1 border-t border-b border-black my-2">
+                  <span className="font-black text-xs tracking-widest text-black uppercase">
+                    SAFETY IS OUR PRIORITY
+                  </span>
+                </div>
+
+                {/* Bottom Contact Details Footer with exact updated address */}
+                <div className="text-center text-[10px] text-black leading-normal space-y-0.5 pt-1">
+                  <p className="font-semibold text-black">
+                    #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka
+                  </p>
+                  <p className="font-semibold font-mono text-black">
+                    Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* =================================================================== */}
-        {/* SCREEN FOOTER ACTIONS                                              */}
-        {/* =================================================================== */}
-        <div className="no-print p-4 border-t border-zinc-800 bg-zinc-950 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-zinc-400">
-            <FileCheck className="w-4 h-4 text-emerald-400" />
-            <span>
-              Total {totalUnits} {totalUnits === 1 ? 'item' : 'items'} in quote | Total ₹{formatInr(grandTotal)}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsQuotationOpen(false)}
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl transition-colors cursor-pointer"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="px-6 py-2.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-amber-400/20 cursor-pointer"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Print Official Letterhead</span>
-            </button>
           </div>
         </div>
       </div>
+
+      {/* =================================================================== */}
+      {/* SCREEN FOOTER ACTIONS                                              */}
+      {/* =================================================================== */}
+      <div className="qm-no-print print:hidden no-print p-4 border-t border-zinc-800 bg-zinc-950 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 text-zinc-400">
+          <FileCheck className="w-4 h-4 text-emerald-400" />
+          <span>
+            Total {totalUnits} {totalUnits === 1 ? 'item' : 'items'} in quote | Total ₹{formatInr(grandTotal)}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsQuotationOpen(false)}
+            className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl transition-colors cursor-pointer"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            onClick={handlePrintQuotation}
+            className="px-6 py-2.5 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-amber-400/20 cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print Official Letterhead</span>
+          </button>
+        </div>
+      </div>
     </div>
-  );
+  </div>
+);
+
+return typeof document !== 'undefined'
+  ? createPortal(modalContent, document.body)
+  : modalContent;
 };

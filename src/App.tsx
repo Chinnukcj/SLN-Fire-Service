@@ -43,13 +43,17 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#09090b] text-zinc-100 selection:bg-red-950 selection:text-red-200">
-      {/* Top Navbar */}
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {/* Cart Drawer, Checkout Modal & Printable Quotation Overlays */}
-      <CartDrawer />
-      <CheckoutModal />
+      {/* Printable Quotation Overlay (kept outside print:hidden) */}
       <QuotationModal />
+
+      {/* Main Website Wrapper: completely hidden when printing letterhead */}
+      <div className="print:hidden flex flex-col flex-1">
+        {/* Top Navbar */}
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Cart Drawer & Checkout Modal */}
+        <CartDrawer />
+        <CheckoutModal />
 
       {/* ========================================================================= */}
       {/* CLEAN MINIMALIST HERO SECTION                                            */}
@@ -341,6 +345,7 @@ function AppContent() {
       {/* Footer */}
       <Footer />
     </div>
+  </div>
   );
 }
 
