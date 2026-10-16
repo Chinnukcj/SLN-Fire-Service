@@ -43,83 +43,282 @@ export const QuotationModal: React.FC = () => {
   if (!isQuotationOpen) return null;
 
   const handlePrintQuotation = () => {
-    const printContent = document.getElementById('printable-quotation');
-    if (!printContent) {
-      window.print();
-      return;
-    }
+    // Remove any old print iframe
+    const existingIframe = document.getElementById('sln-print-frame');
+    if (existingIframe) existingIframe.remove();
 
-    // Create a hidden iframe on the page
     const iframe = document.createElement('iframe');
+    iframe.id = 'sln-print-frame';
+    // CRITICAL: Do NOT use visibility: hidden or display: none, or Chrome prints a blank page!
     iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
+    iframe.style.top = '-10000px';
+    iframe.style.left = '-10000px';
     iframe.style.width = '210mm';
     iframe.style.height = '297mm';
     iframe.style.border = '0';
-    iframe.style.visibility = 'hidden';
     document.body.appendChild(iframe);
+
+    const subTotal = items.reduce(
+      (sum, item) => sum + (item.isPriceOnRequest ? 0 : item.unitPrice * item.quantity),
+      0
+    );
+    const calculatedGst = subTotal * 0.18;
+    const calculatedGrand = subTotal + calculatedGst;
+
+    const rowsHtml = items.length > 0
+      ? items.map((item, idx) => {
+          const servicePrefix = item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of';
+          const materialText = item.material ? ` (${item.material})` : '';
+          const desc = `${servicePrefix} ${item.name} ${item.capacityLabel}${materialText} ISI Marked`;
+          const rateText = item.isPriceOnRequest ? 'On Request' : item.unitPrice.toFixed(2);
+          const amountText = item.isPriceOnRequest
+            ? 'Quoted Sep.'
+            : (item.unitPrice * item.quantity).toFixed(2);
+
+          return `
+          <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td>
+              <strong>${desc}</strong>
+              <div style="font-size: 9.5px; color: #333; font-family: monospace;">Class: ${item.fireClass} | ${item.standard}</div>
+            </td>
+            <td style="text-align:center;">${item.quantity} NOS</td>
+            <td style="text-align:right;">${rateText}</td>
+            <td style="text-align:right; font-weight:bold;">${amountText}</td>
+          </tr>
+        `;
+        }).join('')
+      : `<tr><td colspan="5" style="text-align:center; padding: 12px;">No items selected</td></tr>`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>SLN Fire Service - Quotation</title>
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 10mm 12mm;
+          }
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000000;
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+            line-height: 1.35;
+          }
+          .header-table {
+            width: 100%;
+            border-bottom: 2.5px solid #cc0000;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+          }
+          .logo-box {
+            width: 70px;
+            border: 1.5px solid #1e3a8a;
+            border-radius: 6px;
+            overflow: hidden;
+            text-align: center;
+            font-weight: bold;
+          }
+          .logo-top { background: #1e3a8a; color: #fff; font-size: 18px; padding: 2px 0; letter-spacing: 1px; }
+          .logo-mid { background: #dc2626; color: #fff; font-size: 9px; padding: 2px 0; font-style: italic; }
+          .logo-bot { background: #fff; color: #1e3a8a; font-size: 6px; padding: 1px 0; }
+          .company-title {
+            color: #c00000;
+            font-size: 30px;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1.05;
+            letter-spacing: 0.5px;
+          }
+          .company-sub {
+            font-size: 13px;
+            font-weight: bold;
+            font-style: italic;
+            margin: 3px 0;
+          }
+          .isi-line {
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 3px;
+          }
+          .isi-badge {
+            display: inline-block;
+            border: 1.5px solid #000;
+            padding: 0px 4px;
+            font-family: serif;
+            font-weight: bold;
+            font-size: 11px;
+            margin: 0 3px;
+          }
+          .quote-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+          }
+          .quote-table th, .quote-table td {
+            border: 1px solid #000000;
+            padding: 5px 7px;
+            font-size: 11.5px;
+          }
+          .quote-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+          .terms-grid {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+          }
+          .terms-grid td {
+            width: 50%;
+            vertical-align: top;
+            padding-right: 10px;
+            font-size: 11px;
+            line-height: 1.45;
+          }
+          .footer-block {
+            margin-top: 14px;
+            page-break-inside: avoid;
+          }
+        </style>
+      </head>
+      <body>
+        <!-- HEADER -->
+        <table class="header-table">
+          <tr>
+            <td style="width: 24%; vertical-align: top;">
+              <div class="logo-box">
+                <div class="logo-top">SLN</div>
+                <div class="logo-mid">Fire Service</div>
+                <div class="logo-bot">Fire Protection Engineers</div>
+              </div>
+              <div style="font-size: 10px; font-weight: bold; margin-top: 4px;">
+                SINCE 2004<br/>
+                <span style="font-size: 8.5px;">FIRE PROTECTION ENGINEERS</span>
+              </div>
+            </td>
+            <td style="width: 56%; text-align: center; vertical-align: middle;">
+              <h1 class="company-title">SLN Fire Service</h1>
+              <div class="company-sub">All Types of Fire Extinguishers and Equipments</div>
+              <div class="isi-line">We are supplying of all <span class="isi-badge">ISI</span> Marked products</div>
+            </td>
+            <td style="width: 20%; text-align: right; vertical-align: bottom; font-size: 12px;">
+              <strong>Date:</strong> ${quoteDate || new Date().toLocaleDateString('en-GB')}
+            </td>
+          </tr>
+        </table>
+
+        <!-- RECIPIENT & INTRO -->
+        <div style="margin-bottom: 8px;">
+          <div>To,</div>
+          <div><strong>The Manager,</strong></div>
+          <div style="font-weight: bold; font-size: 13px; text-transform: uppercase;">${customerName || 'CUSTOMER / COMPANY NAME'}</div>
+          <div>${customerAddress || 'Bengaluru, Karnataka'}</div>
+        </div>
+
+        <div style="margin-bottom: 6px;">Dear Sir/Madam,</div>
+        <div style="font-weight: bold; margin-bottom: 3px;">Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS</div>
+        <div style="font-weight: bold; margin-bottom: 8px;">Kind Attn: ${attentionTo || 'Sir / Madam'}</div>
+
+        <p style="margin: 0 0 10px 0; text-align: justify;">
+          Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
+        </p>
+
+        <!-- ITEMS TABLE -->
+        <table class="quote-table">
+          <thead>
+            <tr>
+              <th style="width: 8%;">SL. NO.</th>
+              <th style="width: 52%; text-align: left;">DESCRIPTION</th>
+              <th style="width: 12%;">UNIT</th>
+              <th style="width: 13%; text-align: right;">RATE</th>
+              <th style="width: 15%; text-align: right;">AMOUNT</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+            <tr>
+              <td colspan="4" style="text-align: right; font-weight: bold;">TOTAL AMOUNT</td>
+              <td style="text-align: right; font-weight: bold;">₹ ${subTotal.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: right; font-weight: bold;">GSTIN @ 18%</td>
+              <td style="text-align: right; font-weight: bold;">₹ ${calculatedGst.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: right; font-weight: bold; font-size: 12.5px;">GRAND TOTAL AMOUNT</td>
+              <td style="text-align: right; font-weight: bold; font-size: 12.5px;">₹ ${calculatedGrand.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- TERMS & CONDITIONS -->
+        <table class="terms-grid">
+          <tr>
+            <td>
+              <div style="font-weight: bold; margin-bottom: 4px;">WOULD YOU GIVE US ORDER...?</div>
+              1) We are fire extinguishers sales and service<br/>
+              2) We will give all products with high class quality<br/>
+              3) Our products will be supplied with ISI and Test certificate<br/>
+              4) We have 100+ satisfied clients<br/>
+              5) 50% Advance Payment
+            </td>
+            <td>
+              <div style="font-weight: bold; margin-bottom: 4px;">TERMS & CONDITION</div>
+              1) GSTIN @ 18% extra<br/>
+              2) Warranty 1 year<br/>
+              3) Delivery within 12 hours<br/>
+              4) Payment after installation of fire extinguishers<br/>
+              5) Quotation valid for 30 days.
+            </td>
+          </tr>
+        </table>
+
+        <!-- SIGNATORY & FOOTER -->
+        <div class="footer-block">
+          <div style="margin-top: 12px;">
+            <div>Yours truly,</div>
+            <div style="font-weight: bold; margin-top: 2px;">FOR SLN FIRE SERVICE</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; border-top: 1px solid #000; display: inline-block; padding-top: 3px;">Authorized Signatory</div>
+          </div>
+
+          <div style="text-align: center; margin-top: 10px;">
+            <div style="font-size: 10px; font-style: italic;">Note:- Prices are subject to change without any prior intimation</div>
+            <div style="font-weight: 900; font-size: 12px; letter-spacing: 1px; margin: 4px 0; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
+              SAFETY IS OUR PRIORITY
+            </div>
+            <div style="font-weight: bold; font-size: 11px; margin-top: 4px;">
+              #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka<br/>
+              Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
 
     const doc = iframe.contentWindow?.document;
     if (!doc) return;
-
-    // Copy all <style> and <link rel="stylesheet"> tags from the main document so Tailwind works
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map((node) => node.outerHTML)
-      .join('\n');
-
     doc.open();
-    doc.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>SLN Fire Service - Official Quotation</title>
-          ${styles}
-          <style>
-            @page {
-              size: A4 portrait;
-              margin: 8mm;
-            }
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              background: #ffffff !important;
-              color: #000000 !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              font-family: Arial, Helvetica, sans-serif;
-            }
-            #printable-quotation {
-              width: 100% !important;
-              max-width: 100% !important;
-              margin: 0 !important;
-              padding: 4mm !important;
-              box-shadow: none !important;
-              border: none !important;
-              background: #ffffff !important;
-              color: #000000 !important;
-              display: block !important;
-              visibility: visible !important;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="printable-quotation">
-            ${printContent.innerHTML}
-          </div>
-        </body>
-      </html>
-    `);
+    doc.write(htmlContent);
     doc.close();
 
-    // Wait 400ms for CSS and images (like the logo) to load inside the iframe before printing
     setTimeout(() => {
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }, 400);
+    }, 300);
   };
 
   const formatInr = (val: number) => {
