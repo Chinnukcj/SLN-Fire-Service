@@ -43,119 +43,83 @@ export const QuotationModal: React.FC = () => {
   if (!isQuotationOpen) return null;
 
   const handlePrintQuotation = () => {
-    const printElem = document.getElementById('printable-quotation');
-    if (!printElem) {
+    const printContent = document.getElementById('printable-quotation');
+    if (!printContent) {
       window.print();
       return;
     }
 
-    // Remove any previously created print iframe
-    const existingFrame = document.getElementById('sln-print-iframe');
-    if (existingFrame) {
-      existingFrame.remove();
-    }
-
+    // Create a hidden iframe on the page
     const iframe = document.createElement('iframe');
-    iframe.id = 'sln-print-iframe';
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
     iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
+    iframe.style.width = '210mm';
+    iframe.style.height = '297mm';
     iframe.style.border = '0';
     iframe.style.visibility = 'hidden';
     document.body.appendChild(iframe);
 
     const doc = iframe.contentWindow?.document;
-    if (!doc) {
-      window.print();
-      return;
-    }
+    if (!doc) return;
 
-    // Collect all stylesheets and style blocks from current page
-    let stylesHtml = '';
-    document.querySelectorAll('style, link[rel="stylesheet"]').forEach((node) => {
-      stylesHtml += node.outerHTML;
-    });
+    // Copy all <style> and <link rel="stylesheet"> tags from the main document so Tailwind works
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map((node) => node.outerHTML)
+      .join('\n');
 
-    const contentHtml = `
+    doc.open();
+    doc.write(`
       <!DOCTYPE html>
-      <html lang="en">
+      <html>
         <head>
-          <meta charset="utf-8" />
           <title>SLN Fire Service - Official Quotation</title>
-          ${stylesHtml}
+          ${styles}
           <style>
             @page {
               size: A4 portrait;
               margin: 8mm;
-            }
-            *, *::before, *::after {
-              box-sizing: border-box;
             }
             html, body {
               margin: 0 !important;
               padding: 0 !important;
               background: #ffffff !important;
               color: #000000 !important;
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
+              font-family: Arial, Helvetica, sans-serif;
             }
             #printable-quotation {
               width: 100% !important;
               max-width: 100% !important;
-              margin: 0 auto !important;
-              padding: 0 !important;
+              margin: 0 !important;
+              padding: 4mm !important;
               box-shadow: none !important;
+              border: none !important;
               background: #ffffff !important;
               color: #000000 !important;
-            }
-            table {
-              border-collapse: collapse !important;
-              width: 100% !important;
-            }
-            th, td {
-              border-color: #000000 !important;
-              color: #000000 !important;
-            }
-            .border-black {
-              border-color: #000000 !important;
-            }
-            .text-red-600 {
-              color: #dc2626 !important;
-            }
-            .border-red-600 {
-              border-color: #dc2626 !important;
-            }
-            tr, .qm-keep {
-              break-inside: avoid !important;
-              page-break-inside: avoid !important;
+              display: block !important;
+              visibility: visible !important;
             }
           </style>
         </head>
-        <body class="bg-white text-black p-0 m-0">
-          <div style="width: 100%; max-width: 194mm; margin: 0 auto; background: #ffffff; color: #000000;">
-            ${printElem.outerHTML}
+        <body>
+          <div id="printable-quotation">
+            ${printContent.innerHTML}
           </div>
         </body>
       </html>
-    `;
-
-    doc.open();
-    doc.write(contentHtml);
+    `);
     doc.close();
 
-    // Trigger isolated print after iframe settles
+    // Wait 400ms for CSS and images (like the logo) to load inside the iframe before printing
     setTimeout(() => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } catch (err) {
-        console.error('Error invoking isolated iframe print:', err);
-        window.print();
-      }
-    }, 250);
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }, 400);
   };
 
   const formatInr = (val: number) => {
