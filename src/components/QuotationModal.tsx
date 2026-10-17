@@ -115,11 +115,19 @@ export const QuotationModal: React.FC = () => {
             font-size: 12px;
             line-height: 1.35;
           }
+          .header-banner {
+            background-color: #eaf6fa !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            /* Stretch to the top, left, and right edges of the PDF page */
+            margin: -10mm -12mm 10px -12mm;
+            padding: 8mm 12mm 6px 12mm;
+            border-bottom: 2.5px solid #cc0000;
+          }
           .header-table {
             width: 100%;
-            border-bottom: 2.5px solid #cc0000;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
+            border-collapse: collapse;
+            background-color: transparent;
           }
           .logo-box {
             width: 70px;
@@ -195,29 +203,31 @@ export const QuotationModal: React.FC = () => {
       </head>
       <body>
         <!-- HEADER -->
-        <table class="header-table">
-          <tr>
-            <td style="width: 24%; vertical-align: top;">
-              <div class="logo-box">
-                <div class="logo-top">SLN</div>
-                <div class="logo-mid">Fire Service</div>
-                <div class="logo-bot">Fire Protection Engineers</div>
-              </div>
-              <div style="font-size: 10px; font-weight: bold; margin-top: 4px;">
-                SINCE 2004<br/>
-                <span style="font-size: 8.5px;">FIRE PROTECTION ENGINEERS</span>
-              </div>
-            </td>
-            <td style="width: 56%; text-align: center; vertical-align: middle;">
-              <h1 class="company-title">SLN Fire Service</h1>
-              <div class="company-sub">All Types of Fire Extinguishers and Equipments</div>
-              <div class="isi-line">We are supplying of all <span class="isi-badge">ISI</span> Marked products</div>
-            </td>
-            <td style="width: 20%; text-align: right; vertical-align: bottom; font-size: 12px;">
-              <strong>Date:</strong> ${quoteDate || new Date().toLocaleDateString('en-GB')}
-            </td>
-          </tr>
-        </table>
+        <div class="header-banner">
+          <table class="header-table">
+            <tr>
+              <td style="width: 24%; vertical-align: top;">
+                <div class="logo-box">
+                  <div class="logo-top">SLN</div>
+                  <div class="logo-mid">Fire Service</div>
+                  <div class="logo-bot">Fire Protection Engineers</div>
+                </div>
+                <div style="font-size: 10px; font-weight: bold; margin-top: 4px;">
+                  SINCE 2004<br/>
+                  <span style="font-size: 8.5px;">FIRE PROTECTION ENGINEERS</span>
+                </div>
+              </td>
+              <td style="width: 56%; text-align: center; vertical-align: middle;">
+                <h1 class="company-title">SLN Fire Service</h1>
+                <div class="company-sub">All Types of Fire Extinguishers and Equipments</div>
+                <div class="isi-line">We are supplying of all <span class="isi-badge">ISI</span> Marked products</div>
+              </td>
+              <td style="width: 20%; text-align: right; vertical-align: bottom; font-size: 12px;">
+                <strong>Date:</strong> ${quoteDate || new Date().toLocaleDateString('en-GB')}
+              </td>
+            </tr>
+          </table>
+        </div>
 
         <!-- RECIPIENT & INTRO -->
         <div style="margin-bottom: 8px;">
@@ -460,71 +470,73 @@ export const QuotationModal: React.FC = () => {
               }}
             >
             {/* =============================================================== */}
-            {/* 1. TOP HEADER (3-COLUMN GRID)                                   */}
+            {/* 1. TOP HEADER (3-COLUMN GRID) WITH LIGHT BLUE BANNER TINT       */}
             {/* =============================================================== */}
-            <div className="grid grid-cols-3 items-end border-b-2 border-red-600 pb-4 mb-4 bg-white text-black">
-              {/* Column 1 (Left): Logo & SINCE 2004 text */}
-              <div className="text-left flex flex-col items-start justify-end">
-                <div className="w-[64px] h-[64px] flex items-center justify-start">
-                  <CompanyLogo size={64} className="object-contain" />
+            <div className="-mx-[10mm] -mt-[10mm] px-[10mm] pt-[8mm] pb-4 mb-4 bg-[#eaf6fa] border-b-2 border-red-600 text-black">
+              <div className="grid grid-cols-3 items-end">
+                {/* Column 1 (Left): Logo & SINCE 2004 text */}
+                <div className="text-left flex flex-col items-start justify-end">
+                  <div className="w-[64px] h-[64px] flex items-center justify-start">
+                    <CompanyLogo size={64} className="object-contain" />
+                  </div>
+                  <div className="mt-1 text-left">
+                    <span className="text-xs font-black tracking-wider text-black uppercase block font-sans">
+                      SINCE 2004
+                    </span>
+                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight block leading-tight">
+                      Fire Protection Engineers
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-1 text-left">
-                  <span className="text-xs font-black tracking-wider text-black uppercase block font-sans">
-                    SINCE 2004
-                  </span>
-                  <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight block leading-tight">
-                    Fire Protection Engineers
-                  </span>
-                </div>
-              </div>
 
-              {/* Column 2 (Center): Main Title Block */}
-              <div className="text-center">
-                <h1
-                  className="text-3xl sm:text-4xl font-extrabold tracking-tight text-red-600 leading-none"
-                  style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}
-                >
-                  SLN Fire Service
-                </h1>
-                <p className="text-xs sm:text-sm font-semibold italic text-black mt-1">
-                  All Types of Fire Extinguishers and Equipments
-                </p>
-                <div className="flex items-center justify-center gap-2 mt-1.5 text-xs font-semibold text-black">
-                  <span>We are supplying of all</span>
-                  {/* Realistic Official ISI Mark Inline SVG */}
-                  <span className="inline-flex items-center mx-0.5" title="ISI Certified">
-                    <svg
-                      className="h-4.5 w-auto"
-                      viewBox="0 0 72 32"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-label="ISI Mark"
-                    >
-                      <rect x="1" y="1" width="70" height="30" rx="3" stroke="#000000" strokeWidth="1.6" fill="#ffffff" />
-                      <rect x="3.5" y="3.5" width="65" height="25" rx="1.5" stroke="#000000" strokeWidth="0.8" fill="none" />
-                      <text
-                        x="36"
-                        y="21"
-                        textAnchor="middle"
-                        fill="#000000"
-                        fontFamily="'Arial Black', Arial, sans-serif"
-                        fontSize="17"
-                        fontWeight="900"
-                        letterSpacing="2.5"
+                {/* Column 2 (Center): Main Title Block */}
+                <div className="text-center">
+                  <h1
+                    className="text-3xl sm:text-4xl font-extrabold tracking-tight text-red-600 leading-none"
+                    style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}
+                  >
+                    SLN Fire Service
+                  </h1>
+                  <p className="text-xs sm:text-sm font-semibold italic text-black mt-1">
+                    All Types of Fire Extinguishers and Equipments
+                  </p>
+                  <div className="flex items-center justify-center gap-2 mt-1.5 text-xs font-semibold text-black">
+                    <span>We are supplying of all</span>
+                    {/* Realistic Official ISI Mark Inline SVG */}
+                    <span className="inline-flex items-center mx-0.5" title="ISI Certified">
+                      <svg
+                        className="h-4.5 w-auto"
+                        viewBox="0 0 72 32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="ISI Mark"
                       >
-                        ISI
-                      </text>
-                    </svg>
-                  </span>
-                  <span>Marked products</span>
+                        <rect x="1" y="1" width="70" height="30" rx="3" stroke="#000000" strokeWidth="1.6" fill="#ffffff" />
+                        <rect x="3.5" y="3.5" width="65" height="25" rx="1.5" stroke="#000000" strokeWidth="0.8" fill="none" />
+                        <text
+                          x="36"
+                          y="21"
+                          textAnchor="middle"
+                          fill="#000000"
+                          fontFamily="'Arial Black', Arial, sans-serif"
+                          fontSize="17"
+                          fontWeight="900"
+                          letterSpacing="2.5"
+                        >
+                          ISI
+                        </text>
+                      </svg>
+                    </span>
+                    <span>Marked products</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Column 3 (Right): Date field */}
-              <div className="text-right flex flex-col items-end justify-end pb-1">
-                <div className="text-xs text-black font-mono">Date:</div>
-                <div className="text-sm font-bold text-black font-mono border-b border-black pb-0.5 min-w-[85px] text-right">
-                  {quoteDate}
+                {/* Column 3 (Right): Date field */}
+                <div className="text-right flex flex-col items-end justify-end pb-1">
+                  <div className="text-xs text-black font-mono">Date:</div>
+                  <div className="text-sm font-bold text-black font-mono border-b border-black pb-0.5 min-w-[85px] text-right">
+                    {quoteDate}
+                  </div>
                 </div>
               </div>
             </div>
