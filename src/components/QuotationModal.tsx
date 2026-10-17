@@ -99,35 +99,42 @@ export const QuotationModal: React.FC = () => {
         <style>
           @page {
             size: A4 portrait;
-            margin: 10mm 12mm;
+            margin: 0 !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            line-height: 1.35;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           * {
             box-sizing: border-box;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          body {
-            font-family: Arial, Helvetica, sans-serif;
-            color: #000000;
-            background: #ffffff;
-            margin: 0;
-            padding: 0;
-            font-size: 12px;
-            line-height: 1.35;
-          }
+          /* Full-bleed blue header from the very top edge down to the red line */
           .header-banner {
-            background-color: #eaf6fa !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            /* Stretch to the top, left, and right edges of the PDF page */
-            margin: -10mm -12mm 10px -12mm;
-            padding: 8mm 12mm 6px 12mm;
+            width: 100%;
+            background-color: #dcebf7 !important;
+            margin: 0 !important;
+            padding: 10mm 12mm 8px 12mm !important; /* Top padding protects the SLN logo from clipping */
             border-bottom: 2.5px solid #cc0000;
+            box-sizing: border-box;
           }
           .header-table {
             width: 100%;
             border-collapse: collapse;
-            background-color: transparent;
+            background: transparent;
+          }
+          /* Padded wrapper for everything below the red line */
+          .content-body {
+            padding: 10px 12mm 10mm 12mm !important;
+            box-sizing: border-box;
           }
           .logo-box {
             width: 70px;
@@ -229,6 +236,8 @@ export const QuotationModal: React.FC = () => {
           </table>
         </div>
 
+      <!-- Padded wrapper for everything below the red line -->
+      <div class="content-body">
         <!-- RECIPIENT & INTRO -->
         <div style="margin-bottom: 8px;">
           <div>To,</div>
@@ -315,6 +324,7 @@ export const QuotationModal: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
       </body>
       </html>
     `;
@@ -462,7 +472,7 @@ export const QuotationModal: React.FC = () => {
             {/* A4 PAPER CONTAINER */}
             <div
               id="printable-quotation"
-              className="bg-white text-black w-full max-w-[210mm] mx-auto p-[10mm] text-[11px] leading-snug font-sans shadow-lg print:shadow-none print:p-0 print:max-w-full print:w-full"
+              className="bg-white text-black w-full max-w-[210mm] mx-auto p-0 overflow-hidden text-[11px] leading-snug font-sans shadow-lg print:shadow-none print:p-0 print:max-w-full print:w-full"
               style={{
                 fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 color: '#000000',
@@ -470,9 +480,9 @@ export const QuotationModal: React.FC = () => {
               }}
             >
             {/* =============================================================== */}
-            {/* 1. TOP HEADER (3-COLUMN GRID) WITH LIGHT BLUE BANNER TINT       */}
+            {/* 1. TOP HEADER BANNER (FULL-BLEED LIGHT BLUE #dcebf7)           */}
             {/* =============================================================== */}
-            <div className="-mx-[10mm] -mt-[10mm] px-[10mm] pt-[8mm] pb-4 mb-4 bg-[#eaf6fa] border-b-2 border-red-600 text-black">
+            <div className="w-full bg-[#dcebf7] px-[12mm] pt-[10mm] pb-2 border-b-2 border-red-600 text-black">
               <div className="grid grid-cols-3 items-end">
                 {/* Column 1 (Left): Logo & SINCE 2004 text */}
                 <div className="text-left flex flex-col items-start justify-end">
@@ -540,6 +550,9 @@ export const QuotationModal: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* PADDED CONTENT BODY FOR EVERYTHING BELOW THE RED LINE */}
+            <div className="content-body px-[12mm] pt-3 pb-[10mm] text-black">
 
             {/* =============================================================== */}
             {/* 2. RECIPIENT ("TO:" BLOCK), SUBJECT & INTRO PARAGRAPH           */}
@@ -774,6 +787,7 @@ export const QuotationModal: React.FC = () => {
                   </p>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
