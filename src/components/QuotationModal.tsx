@@ -104,11 +104,17 @@ export const QuotationModal: React.FC = () => {
           html, body {
             margin: 0 !important;
             padding: 0 !important;
+            width: 210mm;
+            height: 297mm;
+            max-height: 297mm;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             background: #ffffff !important;
             color: #000000 !important;
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
-            line-height: 1.35;
+            font-size: 12.5px;
+            line-height: 1.5;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -117,24 +123,35 @@ export const QuotationModal: React.FC = () => {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          /* Full-bleed blue header from the very top edge down to the red line */
           .header-banner {
             width: 100%;
             background-color: #dcebf7 !important;
             margin: 0 !important;
-            padding: 10mm 12mm 8px 12mm !important; /* Top padding protects the SLN logo from clipping */
+            padding: 8mm 12mm 8px 12mm !important;
             border-bottom: 2.5px solid #cc0000;
             box-sizing: border-box;
+            flex-shrink: 0;
           }
           .header-table {
             width: 100%;
             border-collapse: collapse;
             background: transparent;
           }
-          /* Padded wrapper for everything below the red line */
           .content-body {
-            padding: 10px 12mm 10mm 12mm !important;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 14px 12mm 10mm 12mm !important;
             box-sizing: border-box;
+          }
+          .intro-section {
+            line-height: 1.65;
+            margin-bottom: 14px;
+          }
+          .bottom-pinned-section {
+            margin-top: auto;
+            padding-top: 12px;
+            page-break-inside: avoid;
           }
           .logo-box {
             width: 70px;
@@ -238,21 +255,25 @@ export const QuotationModal: React.FC = () => {
 
       <!-- Padded wrapper for everything below the red line -->
       <div class="content-body">
-        <!-- RECIPIENT & INTRO -->
-        <div style="margin-bottom: 8px;">
-          <div>To,</div>
-          <div><strong>The Manager,</strong></div>
-          <div style="font-weight: bold; font-size: 13px; text-transform: uppercase;">${customerName || 'CUSTOMER / COMPANY NAME'}</div>
-          <div>${customerAddress || 'Bengaluru, Karnataka'}</div>
+        <!-- RECIPIENT & INTRO (GENEROUS BREATHING ROOM) -->
+        <div class="intro-section">
+          <div style="margin-bottom: 8px;">
+            <div>To,</div>
+            <div style="font-weight: 600;">The Manager,</div>
+            <div style="font-weight: bold; font-size: 13.5px; text-transform: uppercase;">${customerName || 'CUSTOMER / COMPANY NAME'}</div>
+            <div style="white-space: pre-line;">${customerAddress || 'Bengaluru, Karnataka'}</div>
+          </div>
+
+          <div style="margin-bottom: 8px;">
+            <div>Dear Sir/Madam,</div>
+            <div style="font-weight: 800; font-size: 12.5px; margin-top: 2px;">Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS</div>
+            <div style="font-weight: 700; margin-top: 2px;">Kind Attn: ${attentionTo || 'Sir / Madam'}</div>
+          </div>
+
+          <p style="margin: 0; text-align: justify; line-height: 1.65;">
+            Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
+          </p>
         </div>
-
-        <div style="margin-bottom: 6px;">Dear Sir/Madam,</div>
-        <div style="font-weight: bold; margin-bottom: 3px;">Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS</div>
-        <div style="font-weight: bold; margin-bottom: 8px;">Kind Attn: ${attentionTo || 'Sir / Madam'}</div>
-
-        <p style="margin: 0 0 10px 0; text-align: justify;">
-          Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
-        </p>
 
         <!-- ITEMS TABLE -->
         <table class="quote-table">
@@ -282,45 +303,48 @@ export const QuotationModal: React.FC = () => {
           </tbody>
         </table>
 
-        <!-- TERMS & CONDITIONS -->
-        <table class="terms-grid">
-          <tr>
-            <td>
-              <div style="font-weight: bold; margin-bottom: 4px;">WOULD YOU GIVE US ORDER...?</div>
-              1) We are fire extinguishers sales and service<br/>
-              2) We will give all products with high class quality<br/>
-              3) Our products will be supplied with ISI and Test certificate<br/>
-              4) We have 100+ satisfied clients<br/>
-              5) 50% Advance Payment
-            </td>
-            <td>
-              <div style="font-weight: bold; margin-bottom: 4px;">TERMS & CONDITION</div>
-              1) GSTIN @ 18% extra<br/>
-              2) Warranty 1 year<br/>
-              3) Delivery within 12 hours<br/>
-              4) Payment after installation of fire extinguishers<br/>
-              5) Quotation valid for 30 days.
-            </td>
-          </tr>
-        </table>
+        <!-- BOTTOM PINNED SECTION (TERMS, SIGNATORY & FOOTER PINNED TO BOTTOM) -->
+        <div class="bottom-pinned-section">
+          <!-- TERMS & CONDITIONS -->
+          <table class="terms-grid">
+            <tr>
+              <td>
+                <div style="font-weight: bold; margin-bottom: 4px;">WOULD YOU GIVE US ORDER...?</div>
+                1) We are fire extinguishers sales and service<br/>
+                2) We will give all products with high class quality<br/>
+                3) Our products will be supplied with ISI and Test certificate<br/>
+                4) We have 100+ satisfied clients<br/>
+                5) 50% Advance Payment
+              </td>
+              <td>
+                <div style="font-weight: bold; margin-bottom: 4px;">TERMS & CONDITION</div>
+                1) GSTIN @ 18% extra<br/>
+                2) Warranty 1 year<br/>
+                3) Delivery within 12 hours<br/>
+                4) Payment after installation of fire extinguishers<br/>
+                5) Quotation valid for 30 days.
+              </td>
+            </tr>
+          </table>
 
-        <!-- SIGNATORY & FOOTER -->
-        <div class="footer-block">
-          <div style="margin-top: 12px;">
-            <div>Yours truly,</div>
-            <div style="font-weight: bold; margin-top: 2px;">FOR SLN FIRE SERVICE</div>
-            <div style="height: 35px;"></div>
-            <div style="font-weight: bold; border-top: 1px solid #000; display: inline-block; padding-top: 3px;">Authorized Signatory</div>
-          </div>
-
-          <div style="text-align: center; margin-top: 10px;">
-            <div style="font-size: 10px; font-style: italic;">Note:- Prices are subject to change without any prior intimation</div>
-            <div style="font-weight: 900; font-size: 12px; letter-spacing: 1px; margin: 4px 0; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
-              SAFETY IS OUR PRIORITY
+          <!-- SIGNATORY & FOOTER -->
+          <div class="footer-block">
+            <div style="margin-top: 10px;">
+              <div>Yours truly,</div>
+              <div style="font-weight: bold; margin-top: 2px;">FOR SLN FIRE SERVICE</div>
+              <div style="height: 32px;"></div>
+              <div style="font-weight: bold; border-top: 1px solid #000; display: inline-block; padding-top: 3px;">Authorized Signatory</div>
             </div>
-            <div style="font-weight: bold; font-size: 11px; margin-top: 4px;">
-              #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka<br/>
-              Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
+
+            <div style="text-align: center; margin-top: 10px;">
+              <div style="font-size: 10px; font-style: italic;">Note:- Prices are subject to change without any prior intimation</div>
+              <div style="font-weight: 900; font-size: 12px; letter-spacing: 1px; margin: 4px 0; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
+                SAFETY IS OUR PRIORITY
+              </div>
+              <div style="font-weight: bold; font-size: 11px; margin-top: 4px;">
+                #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka<br/>
+                Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
+              </div>
             </div>
           </div>
         </div>
@@ -472,17 +496,18 @@ export const QuotationModal: React.FC = () => {
             {/* A4 PAPER CONTAINER */}
             <div
               id="printable-quotation"
-              className="bg-white text-black w-full max-w-[210mm] mx-auto p-0 overflow-hidden text-[11px] leading-snug font-sans shadow-lg print:shadow-none print:p-0 print:max-w-full print:w-full"
+              className="bg-white text-black w-full max-w-[210mm] min-h-[297mm] mx-auto p-0 overflow-hidden text-[11px] leading-snug font-sans shadow-lg flex flex-col print:shadow-none print:p-0 print:max-w-full print:w-full"
               style={{
                 fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 color: '#000000',
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                minHeight: '297mm'
               }}
             >
             {/* =============================================================== */}
             {/* 1. TOP HEADER BANNER (FULL-BLEED LIGHT BLUE #dcebf7)           */}
             {/* =============================================================== */}
-            <div className="w-full bg-[#dcebf7] px-[12mm] pt-[10mm] pb-2 border-b-2 border-red-600 text-black">
+            <div className="w-full bg-[#dcebf7] px-[12mm] pt-[8mm] pb-2 border-b-2 border-red-600 text-black shrink-0">
               <div className="grid grid-cols-3 items-end">
                 {/* Column 1 (Left): Logo & SINCE 2004 text */}
                 <div className="text-left flex flex-col items-start justify-end">
@@ -552,39 +577,37 @@ export const QuotationModal: React.FC = () => {
             </div>
 
             {/* PADDED CONTENT BODY FOR EVERYTHING BELOW THE RED LINE */}
-            <div className="content-body px-[12mm] pt-3 pb-[10mm] text-black">
+            <div className="content-body flex-1 flex flex-col px-[12mm] pt-4 pb-[10mm] text-black">
 
             {/* =============================================================== */}
             {/* 2. RECIPIENT ("TO:" BLOCK), SUBJECT & INTRO PARAGRAPH           */}
             {/* =============================================================== */}
-            <div className="mb-4 text-xs leading-relaxed text-black">
-              <div className="space-y-0.5">
+            <div className="intro-section mb-4 text-xs leading-relaxed text-black">
+              <div className="space-y-1 mb-2.5">
                 <p className="text-black font-medium">To,</p>
                 <p className="text-black font-semibold">The Manager,</p>
                 <p className="text-sm font-bold text-black uppercase tracking-wide">
                   {customerName || 'CUSTOMER / COMPANY NAME'}
                 </p>
                 <p className="text-black whitespace-pre-line font-medium">
-                  {customerAddress || 'Karnataka'}
+                  {customerAddress || 'Bengaluru, Karnataka'}
                 </p>
               </div>
-            </div>
 
-            {/* Salutation, Subject & Attention */}
-            <div className="mb-2 space-y-0.5 text-xs text-black">
-              <p className="text-black font-medium">Dear Sir/Madam,</p>
-              <p className="font-extrabold text-black tracking-wide text-xs">
-                Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS
-              </p>
-              <p className="font-bold text-black text-xs">
-                Kind Attn: {attentionTo || 'Sir / Madam'}
+              <div className="mb-2.5 space-y-0.5 text-xs text-black">
+                <p className="text-black font-medium">Dear Sir/Madam,</p>
+                <p className="font-extrabold text-black tracking-wide text-xs">
+                  Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS
+                </p>
+                <p className="font-bold text-black text-xs">
+                  Kind Attn: {attentionTo || 'Sir / Madam'}
+                </p>
+              </div>
+
+              <p className="text-xs text-black leading-relaxed text-justify font-medium">
+                Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
               </p>
             </div>
-
-            {/* Intro Text */}
-            <p className="text-xs text-black leading-relaxed mb-3 text-justify font-medium">
-              With Reference to the Discussion our Sales Executive {salesExecutive || 'Mr. JAGADISH'}, had, we are pleased to quote our lowest rate for the following items:
-            </p>
 
             {/* =============================================================== */}
             {/* 3. EXACT QUOTATION TABLE WITH EXPLICIT WHITE BG & BLACK BORDERS  */}
@@ -706,12 +729,12 @@ export const QuotationModal: React.FC = () => {
               </table>
             </div>
 
-            {/* Wrap the signatory and bottom terms/address blocks with the class "qm-keep" to prevent page breaks */}
-            <div className="qm-keep">
+            {/* BOTTOM PINNED SECTION (TERMS, SIGNATORY & FOOTER PINNED TO BOTTOM VIA MARGIN-TOP: AUTO) */}
+            <div className="bottom-pinned-section mt-auto pt-3 qm-keep">
               {/* =============================================================== */}
               {/* 4. TERMS & CONDITIONS SECTION                                    */}
               {/* =============================================================== */}
-              <div className="qm-keep mt-8 pt-4 border-t border-black bg-white text-black">
+              <div className="qm-keep pt-3 border-t border-black bg-white text-black">
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   {/* Left Side */}
                   <div className="space-y-1">
@@ -746,7 +769,7 @@ export const QuotationModal: React.FC = () => {
               {/* =============================================================== */}
               {/* 5. SIGNATORY, TAGLINE & OFFICIAL FOOTER                         */}
               {/* =============================================================== */}
-              <div className="qm-keep mt-6 pt-2 bg-white text-black">
+              <div className="qm-keep mt-4 pt-1 bg-white text-black">
                 {/* Signatory Box (Bottom LEFT) */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-3">
                   <div className="text-left">
