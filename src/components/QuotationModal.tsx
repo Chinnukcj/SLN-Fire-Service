@@ -65,6 +65,33 @@ export const QuotationModal: React.FC = () => {
     const calculatedGst = subTotal * 0.18;
     const calculatedGrand = subTotal + calculatedGst;
 
+    const itemCount = items.length;
+    const isSpacious = itemCount <= 3;
+    const isMedium = itemCount >= 4 && itemCount <= 7;
+    const isCompact = itemCount >= 8;
+
+    // Dynamic Density Configuration based on item count
+    const density = {
+      baseFontSize: isCompact ? '10px' : isMedium ? '11.5px' : '12.5px',
+      baseLineHeight: isCompact ? '1.25' : isMedium ? '1.4' : '1.5',
+      headerPadding: isCompact ? '5mm 12mm 4px 12mm' : isMedium ? '7mm 12mm 6px 12mm' : '9mm 12mm 8px 12mm',
+      companyTitleSize: isCompact ? '24px' : isMedium ? '28px' : '32px',
+      companySubSize: isCompact ? '11px' : isMedium ? '12px' : '13px',
+      logoSize: isCompact ? 50 : isMedium ? 58 : 64,
+      introMarginBottom: isCompact ? '6px' : isMedium ? '10px' : '16px',
+      introLineHeight: isCompact ? '1.25' : isMedium ? '1.45' : '1.65',
+      introFontSize: isCompact ? '10.5px' : isMedium ? '11.5px' : '12px',
+      tableFontSize: isCompact ? '9.5px' : isMedium ? '11px' : '12px',
+      tableCellPadding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px',
+      tableMargin: isCompact ? '6px 0' : isMedium ? '10px 0' : '14px 0',
+      bottomSectionMarginTop: isSpacious ? '18px' : 'auto',
+      termsFontSize: isCompact ? '9px' : isMedium ? '10px' : '11px',
+      termsLineHeight: isCompact ? '1.2' : isMedium ? '1.35' : '1.45',
+      termsMarginTop: isCompact ? '4px' : isMedium ? '8px' : '12px',
+      signatoryGap: isCompact ? '16px' : isMedium ? '28px' : '42px',
+      footerMarginTop: isCompact ? '6px' : isMedium ? '10px' : '14px',
+    };
+
     const rowsHtml = items.length > 0
       ? items.map((item, idx) => {
           const servicePrefix = item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of';
@@ -75,16 +102,20 @@ export const QuotationModal: React.FC = () => {
             ? 'Quoted Sep.'
             : (item.unitPrice * item.quantity).toFixed(2);
 
+          const descHtml = isCompact
+            ? `<strong>${desc}</strong> <span style="font-size: 8.5px; color: #444; font-family: monospace; margin-left: 6px;">[Class: ${item.fireClass} | ${item.standard}]</span>`
+            : `<strong>${desc}</strong>
+               <div style="font-size: 9.5px; color: #333; font-family: monospace; margin-top: 2px;">Class: ${item.fireClass} | ${item.standard}</div>`;
+
           return `
           <tr>
-            <td style="text-align:center;">${idx + 1}</td>
-            <td>
-              <strong>${desc}</strong>
-              <div style="font-size: 9.5px; color: #333; font-family: monospace;">Class: ${item.fireClass} | ${item.standard}</div>
+            <td style="text-align:center; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">${idx + 1}</td>
+            <td style="padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">
+              ${descHtml}
             </td>
-            <td style="text-align:center;">${item.quantity} NOS</td>
-            <td style="text-align:right;">${rateText}</td>
-            <td style="text-align:right; font-weight:bold;">${amountText}</td>
+            <td style="text-align:center; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize}; white-space: nowrap;">${String(item.quantity).padStart(2, '0')} NOS</td>
+            <td style="text-align:right; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">${rateText}</td>
+            <td style="text-align:right; font-weight:bold; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">${amountText}</td>
           </tr>
         `;
         }).join('')
@@ -105,16 +136,14 @@ export const QuotationModal: React.FC = () => {
             margin: 0 !important;
             padding: 0 !important;
             width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
-            overflow: hidden;
+            ${itemCount <= 14 ? 'height: 297mm; max-height: 297mm; overflow: hidden;' : 'min-height: 297mm;'}
             display: flex;
             flex-direction: column;
             background: #ffffff !important;
             color: #000000 !important;
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 12.5px;
-            line-height: 1.5;
+            font-size: ${density.baseFontSize};
+            line-height: ${density.baseLineHeight};
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -127,7 +156,7 @@ export const QuotationModal: React.FC = () => {
             width: 100%;
             background-color: #dcebf7 !important;
             margin: 0 !important;
-            padding: 8mm 12mm 8px 12mm !important;
+            padding: ${density.headerPadding} !important;
             border-bottom: 2.5px solid #cc0000;
             box-sizing: border-box;
             flex-shrink: 0;
@@ -141,86 +170,48 @@ export const QuotationModal: React.FC = () => {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 14px 12mm 10mm 12mm !important;
+            padding: ${isCompact ? '8px 12mm 6mm 12mm' : isMedium ? '10px 12mm 8mm 12mm' : '14px 12mm 10mm 12mm'} !important;
             box-sizing: border-box;
           }
           .intro-section {
-            line-height: 1.65;
-            margin-bottom: 14px;
-          }
-          .bottom-pinned-section {
-            margin-top: auto;
-            padding-top: 12px;
-            page-break-inside: avoid;
-          }
-          .logo-box {
-            width: 70px;
-            border: 1.5px solid #1e3a8a;
-            border-radius: 6px;
-            overflow: hidden;
-            text-align: center;
-            font-weight: bold;
-          }
-          .logo-top { background: #1e3a8a; color: #fff; font-size: 18px; padding: 2px 0; letter-spacing: 1px; }
-          .logo-mid { background: #dc2626; color: #fff; font-size: 9px; padding: 2px 0; font-style: italic; }
-          .logo-bot { background: #fff; color: #1e3a8a; font-size: 6px; padding: 1px 0; }
-          .company-title {
-            color: #c00000;
-            font-size: 30px;
-            font-weight: 900;
-            margin: 0;
-            line-height: 1.05;
-            letter-spacing: 0.5px;
-          }
-          .company-sub {
-            font-size: 13px;
-            font-weight: bold;
-            font-style: italic;
-            margin: 3px 0;
-          }
-          .isi-line {
-            font-size: 11px;
-            font-weight: bold;
-            margin-top: 3px;
-          }
-          .isi-badge {
-            display: inline-block;
-            border: 1.5px solid #000;
-            padding: 0px 4px;
-            font-family: serif;
-            font-weight: bold;
-            font-size: 11px;
-            margin: 0 3px;
+            line-height: ${density.introLineHeight};
+            margin-bottom: ${density.introMarginBottom};
+            font-size: ${density.introFontSize};
           }
           .quote-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
+            margin: ${density.tableMargin};
           }
           .quote-table th, .quote-table td {
             border: 1px solid #000000;
-            padding: 5px 7px;
-            font-size: 11.5px;
+            padding: ${density.tableCellPadding};
+            font-size: ${density.tableFontSize};
           }
           .quote-table th {
             background-color: #f3f4f6;
             font-weight: bold;
             text-transform: uppercase;
           }
+          .bottom-pinned-section {
+            margin-top: ${density.bottomSectionMarginTop};
+            padding-top: ${isCompact ? '4px' : '8px'};
+            page-break-inside: avoid;
+          }
           .terms-grid {
             width: 100%;
-            margin-top: 10px;
+            margin-top: ${density.termsMarginTop};
             border-collapse: collapse;
           }
           .terms-grid td {
             width: 50%;
             vertical-align: top;
             padding-right: 10px;
-            font-size: 11px;
-            line-height: 1.45;
+            font-size: ${density.termsFontSize};
+            line-height: ${density.termsLineHeight};
           }
           .footer-block {
-            margin-top: 14px;
+            margin-top: ${density.footerMarginTop};
             page-break-inside: avoid;
           }
         </style>
@@ -231,20 +222,33 @@ export const QuotationModal: React.FC = () => {
           <table class="header-table">
             <tr>
               <td style="width: 24%; vertical-align: top;">
-                <div class="logo-box">
-                  <div class="logo-top">SLN</div>
-                  <div class="logo-mid">Fire Service</div>
-                  <div class="logo-bot">Fire Protection Engineers</div>
-                </div>
-                <div style="font-size: 10px; font-weight: bold; margin-top: 4px;">
+                <svg width="${density.logoSize}" height="${density.logoSize}" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" style="border-radius: 6px; border: 1.5px solid #1c398e; display: block;">
+                  <rect width="400" height="400" fill="#ffffff" rx="16" />
+                  <rect x="6" y="6" width="388" height="388" fill="none" stroke="#1c398e" stroke-width="8" rx="12" />
+                  <rect x="22" y="22" width="356" height="180" fill="#1b3992" />
+                  <text x="200" y="152" text-anchor="middle" fill="#ffffff" font-family="'Times New Roman', Georgia, serif" font-size="148" font-weight="800" letter-spacing="-3">SLN</text>
+                  <rect x="22" y="202" width="356" height="142" fill="#e01e2b" />
+                  <text x="200" y="300" text-anchor="middle" fill="#ffffff" font-family="'Brush Script MT', cursive" font-size="76" font-weight="700" font-style="italic">Fire Service</text>
+                  <rect x="22" y="344" width="356" height="34" fill="#ffffff" />
+                  <text x="200" y="370" text-anchor="middle" fill="#1b3992" font-family="Arial, sans-serif" font-size="24" font-weight="700">Fire Protection Engineers</text>
+                </svg>
+                <div style="font-size: 10px; font-weight: bold; margin-top: 3px;">
                   SINCE 2004<br/>
-                  <span style="font-size: 8.5px;">FIRE PROTECTION ENGINEERS</span>
+                  <span style="font-size: 8.5px; color: #cc0000;">FIRE PROTECTION ENGINEERS</span>
                 </div>
               </td>
               <td style="width: 56%; text-align: center; vertical-align: middle;">
-                <h1 class="company-title">SLN Fire Service</h1>
-                <div class="company-sub">All Types of Fire Extinguishers and Equipments</div>
-                <div class="isi-line">We are supplying of all <span class="isi-badge">ISI</span> Marked products</div>
+                <h1 style="color: #c00000; font-size: ${density.companyTitleSize}; font-weight: 900; margin: 0; line-height: 1.05; letter-spacing: 0.5px; font-family: 'Arial Black', Arial, sans-serif;">SLN Fire Service</h1>
+                <div style="font-size: ${density.companySubSize}; font-weight: bold; font-style: italic; margin: 2px 0;">All Types of Fire Extinguishers and Equipments</div>
+                <div style="font-size: 11px; font-weight: bold; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <span>We are supplying of all</span>
+                  <svg style="height: 17px; width: 42px; vertical-align: middle;" viewBox="0 0 72 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="70" height="30" rx="3" stroke="#000000" stroke-width="1.6" fill="#ffffff" />
+                    <rect x="3.5" y="3.5" width="65" height="25" rx="1.5" stroke="#000000" stroke-width="0.8" fill="none" />
+                    <text x="36" y="21" text-anchor="middle" fill="#000000" font-family="'Arial Black', Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="2.5">ISI</text>
+                  </svg>
+                  <span>Marked products</span>
+                </div>
               </td>
               <td style="width: 20%; text-align: right; vertical-align: bottom; font-size: 12px;">
                 <strong>Date:</strong> ${quoteDate || new Date().toLocaleDateString('en-GB')}
@@ -255,22 +259,22 @@ export const QuotationModal: React.FC = () => {
 
       <!-- Padded wrapper for everything below the red line -->
       <div class="content-body">
-        <!-- RECIPIENT & INTRO (GENEROUS BREATHING ROOM) -->
+        <!-- RECIPIENT & INTRO (BALANCED BREATHING ROOM) -->
         <div class="intro-section">
-          <div style="margin-bottom: 8px;">
+          <div style="margin-bottom: ${isCompact ? '4px' : '8px'};">
             <div>To,</div>
             <div style="font-weight: 600;">The Manager,</div>
-            <div style="font-weight: bold; font-size: 13.5px; text-transform: uppercase;">${customerName || 'CUSTOMER / COMPANY NAME'}</div>
+            <div style="font-weight: bold; font-size: ${isCompact ? '12px' : '13.5px'}; text-transform: uppercase;">${customerName || 'CUSTOMER / COMPANY NAME'}</div>
             <div style="white-space: pre-line;">${customerAddress || 'Bengaluru, Karnataka'}</div>
           </div>
 
-          <div style="margin-bottom: 8px;">
+          <div style="margin-bottom: ${isCompact ? '4px' : '8px'};">
             <div>Dear Sir/Madam,</div>
-            <div style="font-weight: 800; font-size: 12.5px; margin-top: 2px;">Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS</div>
+            <div style="font-weight: 800; font-size: ${isCompact ? '11px' : '12.5px'}; margin-top: 2px;">Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS</div>
             <div style="font-weight: 700; margin-top: 2px;">Kind Attn: ${attentionTo || 'Sir / Madam'}</div>
           </div>
 
-          <p style="margin: 0; text-align: justify; line-height: 1.65;">
+          <p style="margin: 0; text-align: justify; line-height: ${density.introLineHeight};">
             Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
           </p>
         </div>
@@ -289,27 +293,27 @@ export const QuotationModal: React.FC = () => {
           <tbody>
             ${rowsHtml}
             <tr>
-              <td colspan="4" style="text-align: right; font-weight: bold;">TOTAL AMOUNT</td>
-              <td style="text-align: right; font-weight: bold;">₹ ${subTotal.toFixed(2)}</td>
+              <td colspan="4" style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">TOTAL AMOUNT</td>
+              <td style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">₹ ${subTotal.toFixed(2)}</td>
             </tr>
             <tr>
-              <td colspan="4" style="text-align: right; font-weight: bold;">GSTIN @ 18%</td>
-              <td style="text-align: right; font-weight: bold;">₹ ${calculatedGst.toFixed(2)}</td>
+              <td colspan="4" style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">GSTIN @ 18%</td>
+              <td style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">₹ ${calculatedGst.toFixed(2)}</td>
             </tr>
             <tr>
-              <td colspan="4" style="text-align: right; font-weight: bold; font-size: 12.5px;">GRAND TOTAL AMOUNT</td>
-              <td style="text-align: right; font-weight: bold; font-size: 12.5px;">₹ ${calculatedGrand.toFixed(2)}</td>
+              <td colspan="4" style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${isCompact ? '11px' : '12.5px'};">GRAND TOTAL AMOUNT</td>
+              <td style="text-align: right; font-weight: bold; padding: ${density.tableCellPadding}; font-size: ${isCompact ? '11px' : '12.5px'};">₹ ${calculatedGrand.toFixed(2)}</td>
             </tr>
           </tbody>
         </table>
 
-        <!-- BOTTOM PINNED SECTION (TERMS, SIGNATORY & FOOTER PINNED TO BOTTOM) -->
+        <!-- BOTTOM SECTION (TERMS, SIGNATORY & FOOTER WITH DYNAMIC BALANCED DISTRIBUTION) -->
         <div class="bottom-pinned-section">
           <!-- TERMS & CONDITIONS -->
           <table class="terms-grid">
             <tr>
               <td>
-                <div style="font-weight: bold; margin-bottom: 4px;">WOULD YOU GIVE US ORDER...?</div>
+                <div style="font-weight: bold; margin-bottom: 2px;">WOULD YOU GIVE US ORDER...?</div>
                 1) We are fire extinguishers sales and service<br/>
                 2) We will give all products with high class quality<br/>
                 3) Our products will be supplied with ISI and Test certificate<br/>
@@ -317,7 +321,7 @@ export const QuotationModal: React.FC = () => {
                 5) 50% Advance Payment
               </td>
               <td>
-                <div style="font-weight: bold; margin-bottom: 4px;">TERMS & CONDITION</div>
+                <div style="font-weight: bold; margin-bottom: 2px;">TERMS & CONDITION</div>
                 1) GSTIN @ 18% extra<br/>
                 2) Warranty 1 year<br/>
                 3) Delivery within 12 hours<br/>
@@ -329,19 +333,19 @@ export const QuotationModal: React.FC = () => {
 
           <!-- SIGNATORY & FOOTER -->
           <div class="footer-block">
-            <div style="margin-top: 10px;">
-              <div>Yours truly,</div>
-              <div style="font-weight: bold; margin-top: 2px;">FOR SLN FIRE SERVICE</div>
-              <div style="height: 32px;"></div>
-              <div style="font-weight: bold; border-top: 1px solid #000; display: inline-block; padding-top: 3px;">Authorized Signatory</div>
+            <div style="margin-top: ${isCompact ? '4px' : '8px'};">
+              <div style="font-size: ${isCompact ? '10px' : '11.5px'};">Yours truly,</div>
+              <div style="font-weight: bold; font-size: ${isCompact ? '10px' : '11.5px'}; margin-top: 1px;">FOR SLN FIRE SERVICE</div>
+              <div style="height: ${density.signatoryGap};"></div>
+              <div style="font-weight: bold; font-size: ${isCompact ? '10px' : '11.5px'}; border-top: 1px solid #000; display: inline-block; padding-top: 2px;">Authorized Signatory</div>
             </div>
 
-            <div style="text-align: center; margin-top: 10px;">
-              <div style="font-size: 10px; font-style: italic;">Note:- Prices are subject to change without any prior intimation</div>
-              <div style="font-weight: 900; font-size: 12px; letter-spacing: 1px; margin: 4px 0; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
+            <div style="text-align: center; margin-top: ${isCompact ? '4px' : '8px'};">
+              <div style="font-size: ${isCompact ? '8.5px' : '9.5px'}; font-style: italic;">Note:- Prices are subject to change without any prior intimation</div>
+              <div style="font-weight: 900; font-size: ${isCompact ? '10px' : '11.5px'}; letter-spacing: 1px; margin: 3px 0; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 2px 0;">
                 SAFETY IS OUR PRIORITY
               </div>
-              <div style="font-weight: bold; font-size: 11px; margin-top: 4px;">
+              <div style="font-weight: bold; font-size: ${isCompact ? '9px' : '10.5px'}; margin-top: 3px;">
                 #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka<br/>
                 Mob.: 9945437741, 9448536741 | E-mail: dhanush.slnfire@gmail.com
               </div>
@@ -371,6 +375,11 @@ export const QuotationModal: React.FC = () => {
       maximumFractionDigits: 2
     });
   };
+
+  const itemCount = items.length;
+  const isSpacious = itemCount <= 3;
+  const isMedium = itemCount >= 4 && itemCount <= 7;
+  const isCompact = itemCount >= 8;
 
   const modalContent = (
     <div
@@ -496,29 +505,37 @@ export const QuotationModal: React.FC = () => {
             {/* A4 PAPER CONTAINER */}
             <div
               id="printable-quotation"
-              className="bg-white text-black w-full max-w-[210mm] min-h-[297mm] mx-auto p-0 overflow-hidden text-[11px] leading-snug font-sans shadow-lg flex flex-col print:shadow-none print:p-0 print:max-w-full print:w-full"
+              className="bg-white text-black w-full max-w-[210mm] min-h-[297mm] mx-auto p-0 overflow-hidden font-sans shadow-lg flex flex-col print:shadow-none print:p-0 print:max-w-full print:w-full"
               style={{
                 fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
                 color: '#000000',
                 backgroundColor: '#ffffff',
-                minHeight: '297mm'
+                minHeight: '297mm',
+                fontSize: isCompact ? '10px' : isMedium ? '11.5px' : '12.5px',
+                lineHeight: isCompact ? '1.25' : isMedium ? '1.4' : '1.5'
               }}
             >
             {/* =============================================================== */}
             {/* 1. TOP HEADER BANNER (FULL-BLEED LIGHT BLUE #dcebf7)           */}
             {/* =============================================================== */}
-            <div className="w-full bg-[#dcebf7] px-[12mm] pt-[8mm] pb-2 border-b-2 border-red-600 text-black shrink-0">
+            <div
+              className="w-full bg-[#dcebf7] px-[12mm] border-b-2 border-red-600 text-black shrink-0"
+              style={{
+                paddingTop: isCompact ? '5mm' : isMedium ? '7mm' : '9mm',
+                paddingBottom: isCompact ? '5px' : isMedium ? '7px' : '8px'
+              }}
+            >
               <div className="grid grid-cols-3 items-end">
                 {/* Column 1 (Left): Logo & SINCE 2004 text */}
                 <div className="text-left flex flex-col items-start justify-end">
-                  <div className="w-[64px] h-[64px] flex items-center justify-start">
-                    <CompanyLogo size={64} className="object-contain" />
+                  <div className="flex items-center justify-start">
+                    <CompanyLogo size={isCompact ? 52 : isMedium ? 60 : 66} className="object-contain" />
                   </div>
                   <div className="mt-1 text-left">
-                    <span className="text-xs font-black tracking-wider text-black uppercase block font-sans">
+                    <span className="text-[11px] font-black tracking-wider text-black uppercase block font-sans">
                       SINCE 2004
                     </span>
-                    <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight block leading-tight">
+                    <span className="text-[9.5px] font-bold text-red-600 uppercase tracking-tight block leading-tight">
                       Fire Protection Engineers
                     </span>
                   </div>
@@ -527,20 +544,27 @@ export const QuotationModal: React.FC = () => {
                 {/* Column 2 (Center): Main Title Block */}
                 <div className="text-center">
                   <h1
-                    className="text-3xl sm:text-4xl font-extrabold tracking-tight text-red-600 leading-none"
-                    style={{ fontFamily: "'Arial Black', Arial, sans-serif" }}
+                    className="font-extrabold tracking-tight text-red-600 leading-none"
+                    style={{
+                      fontFamily: "'Arial Black', Arial, sans-serif",
+                      fontSize: isCompact ? '24px' : isMedium ? '28px' : '32px'
+                    }}
                   >
                     SLN Fire Service
                   </h1>
-                  <p className="text-xs sm:text-sm font-semibold italic text-black mt-1">
+                  <p
+                    className="font-semibold italic text-black mt-1"
+                    style={{ fontSize: isCompact ? '11px' : isMedium ? '12px' : '13px' }}
+                  >
                     All Types of Fire Extinguishers and Equipments
                   </p>
-                  <div className="flex items-center justify-center gap-2 mt-1.5 text-xs font-semibold text-black">
+                  <div className="flex items-center justify-center gap-2 mt-1 font-semibold text-black" style={{ fontSize: isCompact ? '10px' : '11px' }}>
                     <span>We are supplying of all</span>
                     {/* Realistic Official ISI Mark Inline SVG */}
                     <span className="inline-flex items-center mx-0.5" title="ISI Certified">
                       <svg
-                        className="h-4.5 w-auto"
+                        className="w-auto"
+                        style={{ height: isCompact ? '15px' : '18px' }}
                         viewBox="0 0 72 32"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -577,16 +601,29 @@ export const QuotationModal: React.FC = () => {
             </div>
 
             {/* PADDED CONTENT BODY FOR EVERYTHING BELOW THE RED LINE */}
-            <div className="content-body flex-1 flex flex-col px-[12mm] pt-4 pb-[10mm] text-black">
+            <div
+              className="content-body flex-1 flex flex-col px-[12mm] text-black"
+              style={{
+                paddingTop: isCompact ? '8px' : isMedium ? '10px' : '14px',
+                paddingBottom: isCompact ? '6mm' : isMedium ? '8mm' : '10mm'
+              }}
+            >
 
             {/* =============================================================== */}
             {/* 2. RECIPIENT ("TO:" BLOCK), SUBJECT & INTRO PARAGRAPH           */}
             {/* =============================================================== */}
-            <div className="intro-section mb-4 text-xs leading-relaxed text-black">
-              <div className="space-y-1 mb-2.5">
+            <div
+              className="intro-section text-black"
+              style={{
+                marginBottom: isCompact ? '6px' : isMedium ? '10px' : '16px',
+                lineHeight: isCompact ? 1.25 : isMedium ? 1.45 : 1.65,
+                fontSize: isCompact ? '10.5px' : isMedium ? '11.5px' : '12px'
+              }}
+            >
+              <div style={{ marginBottom: isCompact ? '4px' : '8px' }}>
                 <p className="text-black font-medium">To,</p>
                 <p className="text-black font-semibold">The Manager,</p>
-                <p className="text-sm font-bold text-black uppercase tracking-wide">
+                <p className="font-bold text-black uppercase tracking-wide" style={{ fontSize: isCompact ? '12px' : '13.5px' }}>
                   {customerName || 'CUSTOMER / COMPANY NAME'}
                 </p>
                 <p className="text-black whitespace-pre-line font-medium">
@@ -594,17 +631,17 @@ export const QuotationModal: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mb-2.5 space-y-0.5 text-xs text-black">
+              <div style={{ marginBottom: isCompact ? '4px' : '8px' }}>
                 <p className="text-black font-medium">Dear Sir/Madam,</p>
-                <p className="font-extrabold text-black tracking-wide text-xs">
+                <p className="font-extrabold text-black tracking-wide" style={{ fontSize: isCompact ? '11px' : '12.5px', marginTop: '2px' }}>
                   Sub: QUOTATION FOR SUPPLYING OF FIRE EQUIPMENTS
                 </p>
-                <p className="font-bold text-black text-xs">
+                <p className="font-bold text-black" style={{ fontSize: isCompact ? '10.5px' : '11.5px', marginTop: '2px' }}>
                   Kind Attn: {attentionTo || 'Sir / Madam'}
                 </p>
               </div>
 
-              <p className="text-xs text-black leading-relaxed text-justify font-medium">
+              <p className="text-black text-justify font-medium" style={{ margin: 0 }}>
                 Further to your discussion with Mr. Jagadish, we are pleased to present our official quotation for the supply and certified refilling of fire safety equipment. We look forward to securing your facility with ISI-certified protection and prompt service.
               </p>
             </div>
@@ -613,22 +650,28 @@ export const QuotationModal: React.FC = () => {
             {/* 3. EXACT QUOTATION TABLE WITH EXPLICIT WHITE BG & BLACK BORDERS  */}
             {/* =============================================================== */}
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-black bg-white text-black mt-4 mb-4 text-xs">
+              <table
+                className="w-full border-collapse border border-black bg-white text-black"
+                style={{
+                  margin: isCompact ? '6px 0' : isMedium ? '10px 0' : '14px 0',
+                  fontSize: isCompact ? '9.5px' : isMedium ? '11px' : '12px'
+                }}
+              >
                 <thead>
-                  <tr className="bg-white border-b border-black text-black font-bold text-xs">
-                    <th className="py-2 px-3 text-center border-r border-black w-12 bg-white text-black">
+                  <tr className="bg-white border-b border-black text-black font-bold">
+                    <th style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }} className="text-center border-r border-black w-12 bg-white text-black">
                       SL. NO.
                     </th>
-                    <th className="py-2 px-3 border-r border-black text-left bg-white text-black">
+                    <th style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }} className="border-r border-black text-left bg-white text-black">
                       DESCRIPTION
                     </th>
-                    <th className="py-2 px-3 text-center border-r border-black w-20 bg-white text-black">
+                    <th style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }} className="text-center border-r border-black w-20 bg-white text-black">
                       UNIT
                     </th>
-                    <th className="py-2 px-3 text-right border-r border-black w-24 bg-white text-black">
+                    <th style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }} className="text-right border-r border-black w-24 bg-white text-black">
                       RATE
                     </th>
-                    <th className="py-2 px-3 text-right w-28 bg-white text-black">
+                    <th style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }} className="text-right w-28 bg-white text-black">
                       AMOUNT
                     </th>
                   </tr>
@@ -638,7 +681,7 @@ export const QuotationModal: React.FC = () => {
                     <tr className="bg-white text-black">
                       <td
                         colSpan={5}
-                        className="py-6 text-center text-black italic text-xs bg-white"
+                        className="py-6 text-center text-black italic bg-white"
                       >
                         No items added to quotation. Please add products from the catalog.
                       </td>
@@ -658,28 +701,54 @@ export const QuotationModal: React.FC = () => {
                       return (
                         <tr
                           key={item.id}
-                          className="border-b border-black text-xs text-black bg-white"
+                          className="border-b border-black text-black bg-white"
                         >
-                          <td className="py-2 px-3 text-center border-r border-black font-medium bg-white text-black">
+                          <td
+                            style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                            className="text-center border-r border-black font-medium bg-white text-black"
+                          >
                             {index + 1}
                           </td>
-                          <td className="py-2 px-3 border-r border-black font-medium bg-white text-black">
-                            <span className="font-semibold block text-black">{desc}</span>
-                            <span className="text-[10px] text-black font-mono block">
-                              Class: {item.fireClass} | {item.standard}
-                            </span>
+                          <td
+                            style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                            className="border-r border-black font-medium bg-white text-black"
+                          >
+                            {isCompact ? (
+                              <div>
+                                <span className="font-semibold text-black">{desc}</span>
+                                <span className="text-[8.5px] text-zinc-600 font-mono ml-1.5 font-normal whitespace-nowrap">
+                                  [Class: {item.fireClass} | {item.standard}]
+                                </span>
+                              </div>
+                            ) : (
+                              <div>
+                                <span className="font-semibold block text-black">{desc}</span>
+                                <span className="text-[9.5px] text-zinc-600 font-mono block mt-0.5">
+                                  Class: {item.fireClass} | {item.standard}
+                                </span>
+                              </div>
+                            )}
                           </td>
-                          <td className="py-2 px-3 text-center border-r border-black font-semibold whitespace-nowrap bg-white text-black">
+                          <td
+                            style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                            className="text-center border-r border-black font-semibold whitespace-nowrap bg-white text-black"
+                          >
                             {String(item.quantity).padStart(2, '0')} NOS
                           </td>
-                          <td className="py-2 px-3 text-right border-r border-black font-mono bg-white text-black">
+                          <td
+                            style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                            className="text-right border-r border-black font-mono bg-white text-black"
+                          >
                             {item.isPriceOnRequest ? (
                               <span className="italic text-black text-[10px]">On Request</span>
                             ) : (
                               `${formatInr(item.unitPrice)}`
                             )}
                           </td>
-                          <td className="py-2 px-3 text-right font-mono font-semibold bg-white text-black">
+                          <td
+                            style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                            className="text-right font-mono font-semibold bg-white text-black"
+                          >
                             {item.isPriceOnRequest ? (
                               <span className="italic text-black text-[10px]">Quoted Sep.</span>
                             ) : (
@@ -692,36 +761,48 @@ export const QuotationModal: React.FC = () => {
                   )}
 
                   {/* THREE REQUIRED BOTTOM SUMMARY ROWS */}
-                  <tr className="border-t-2 border-black font-bold text-xs bg-white text-black">
+                  <tr className="border-t-2 border-black font-bold bg-white text-black">
                     <td
                       colSpan={4}
-                      className="py-2 px-3 text-right uppercase border-r border-black tracking-wider text-xs bg-white text-black"
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right uppercase border-r border-black tracking-wider bg-white text-black"
                     >
                       TOTAL AMOUNT
                     </td>
-                    <td className="py-2 px-3 text-right font-mono font-bold text-xs bg-white text-black">
+                    <td
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right font-mono font-bold bg-white text-black"
+                    >
                       ₹ {formatInr(subtotal)}
                     </td>
                   </tr>
-                  <tr className="border-t border-black font-bold text-xs bg-white text-black">
+                  <tr className="border-t border-black font-bold bg-white text-black">
                     <td
                       colSpan={4}
-                      className="py-2 px-3 text-right uppercase border-r border-black tracking-wider text-xs bg-white text-black"
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right uppercase border-r border-black tracking-wider bg-white text-black"
                     >
                       GSTIN @ 18%
                     </td>
-                    <td className="py-2 px-3 text-right font-mono font-bold text-xs bg-white text-black">
+                    <td
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right font-mono font-bold bg-white text-black"
+                    >
                       ₹ {formatInr(gstAmount)}
                     </td>
                   </tr>
-                  <tr className="border-t-2 border-black font-extrabold text-sm bg-white text-black">
+                  <tr className="border-t-2 border-black font-extrabold bg-white text-black">
                     <td
                       colSpan={4}
-                      className="py-2 px-3 text-right uppercase border-r border-black tracking-wider text-xs bg-white text-black"
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right uppercase border-r border-black tracking-wider bg-white text-black"
                     >
                       GRAND TOTAL AMOUNT
                     </td>
-                    <td className="py-2 px-3 text-right font-mono font-extrabold text-sm text-black bg-white">
+                    <td
+                      style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
+                      className="text-right font-mono font-extrabold text-black bg-white"
+                    >
                       ₹ {formatInr(grandTotal)}
                     </td>
                   </tr>
@@ -729,19 +810,35 @@ export const QuotationModal: React.FC = () => {
               </table>
             </div>
 
-            {/* BOTTOM PINNED SECTION (TERMS, SIGNATORY & FOOTER PINNED TO BOTTOM VIA MARGIN-TOP: AUTO) */}
-            <div className="bottom-pinned-section mt-auto pt-3 qm-keep">
+            {/* BOTTOM PINNED SECTION (TERMS, SIGNATORY & FOOTER WITH DYNAMIC BALANCED DISTRIBUTION) */}
+            <div
+              className="bottom-pinned-section qm-keep"
+              style={{
+                marginTop: isSpacious ? '18px' : 'auto',
+                paddingTop: isCompact ? '4px' : '8px'
+              }}
+            >
               {/* =============================================================== */}
               {/* 4. TERMS & CONDITIONS SECTION                                    */}
               {/* =============================================================== */}
-              <div className="qm-keep pt-3 border-t border-black bg-white text-black">
-                <div className="grid grid-cols-2 gap-4 text-xs">
+              <div
+                className="qm-keep border-t border-black bg-white text-black"
+                style={{
+                  paddingTop: isCompact ? '4px' : '8px',
+                  fontSize: isCompact ? '9px' : isMedium ? '10px' : '11px',
+                  lineHeight: isCompact ? 1.2 : isMedium ? 1.35 : 1.45
+                }}
+              >
+                <div className="grid grid-cols-2 gap-4">
                   {/* Left Side */}
-                  <div className="space-y-1">
-                    <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
+                  <div className="space-y-0.5">
+                    <h4
+                      className="font-extrabold text-black uppercase tracking-wide"
+                      style={{ fontSize: isCompact ? '9.5px' : isMedium ? '10.5px' : '11.5px', marginBottom: '2px' }}
+                    >
                       WOULD YOU GIVE US ORDER...?
                     </h4>
-                    <ol className="list-none space-y-0.5 text-black text-[11px]">
+                    <ol className="list-none space-y-0.5 text-black">
                       <li>1) We are fire extinguishers sales and service</li>
                       <li>2) We will give all products with high class quality</li>
                       <li>3) Our products will be supplied with ISI and Test certificate</li>
@@ -751,11 +848,14 @@ export const QuotationModal: React.FC = () => {
                   </div>
 
                   {/* Right Side */}
-                  <div className="space-y-1">
-                    <h4 className="font-extrabold text-black text-xs uppercase tracking-wide">
+                  <div className="space-y-0.5">
+                    <h4
+                      className="font-extrabold text-black uppercase tracking-wide"
+                      style={{ fontSize: isCompact ? '9.5px' : isMedium ? '10.5px' : '11.5px', marginBottom: '2px' }}
+                    >
                       TERMS &amp; CONDITION
                     </h4>
-                    <ol className="list-none space-y-0.5 text-black text-[11px]">
+                    <ol className="list-none space-y-0.5 text-black">
                       <li>1) GSTIN @ 18% extra</li>
                       <li>2) Warranty 1 year</li>
                       <li>3) Delivery within 12 hours</li>
@@ -769,39 +869,73 @@ export const QuotationModal: React.FC = () => {
               {/* =============================================================== */}
               {/* 5. SIGNATORY, TAGLINE & OFFICIAL FOOTER                         */}
               {/* =============================================================== */}
-              <div className="qm-keep mt-4 pt-1 bg-white text-black">
+              <div
+                className="qm-keep bg-white text-black"
+                style={{ marginTop: isCompact ? '6px' : isMedium ? '10px' : '14px' }}
+              >
                 {/* Signatory Box (Bottom LEFT) */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-3">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
                   <div className="text-left">
-                    <p className="text-xs text-black font-medium">Yours truly,</p>
-                    <p className="text-xs font-extrabold text-black uppercase tracking-wider mt-0.5">
+                    <p className="text-black font-medium" style={{ fontSize: isCompact ? '10px' : '11.5px' }}>Yours truly,</p>
+                    <p
+                      className="font-extrabold text-black uppercase tracking-wider mt-0.5"
+                      style={{ fontSize: isCompact ? '10px' : '11.5px' }}
+                    >
                       For SLN FIRE SERVICE
                     </p>
-                    <div className="h-12 flex items-center justify-start">
-                      <span className="text-[10px] text-gray-500 font-mono italic">
-                        [Official Stamp / Seal]
+                    <div
+                      style={{ height: isCompact ? '18px' : isMedium ? '28px' : '42px' }}
+                      className="flex items-center justify-start"
+                    >
+                      <span
+                        className="text-gray-400 font-mono italic"
+                        style={{ fontSize: isCompact ? '8.5px' : '9.5px' }}
+                      >
+                        [Authorized Seal / Stamp]
                       </span>
                     </div>
-                    <p className="text-xs font-bold text-black border-t border-black pt-0.5 inline-block min-w-[150px]">
+                    <p
+                      className="font-bold text-black border-t border-black pt-0.5 inline-block"
+                      style={{ fontSize: isCompact ? '10px' : '11.5px', minWidth: isCompact ? '120px' : '150px' }}
+                    >
                       Authorized Signatory
                     </p>
                   </div>
                 </div>
 
                 {/* Note: Perfectly CENTERED at the bottom */}
-                <div className="text-center text-[10px] text-gray-600 italic py-1">
+                <div
+                  className="text-center text-gray-600 italic"
+                  style={{
+                    fontSize: isCompact ? '8.5px' : '9.5px',
+                    padding: isCompact ? '1px 0' : '2px 0',
+                    marginTop: isCompact ? '3px' : '6px'
+                  }}
+                >
                   Note:- Prices are subject to change without any prior intimation
                 </div>
 
                 {/* Bottom Center Bold Tag */}
-                <div className="text-center py-1 border-t border-b border-black my-2">
-                  <span className="font-black text-xs tracking-widest text-black uppercase">
+                <div
+                  className="text-center border-t border-b border-black"
+                  style={{
+                    padding: isCompact ? '1.5px 0' : '3px 0',
+                    margin: isCompact ? '2px 0' : '4px 0'
+                  }}
+                >
+                  <span
+                    className="font-black tracking-widest text-black uppercase"
+                    style={{ fontSize: isCompact ? '10px' : '11.5px' }}
+                  >
                     SAFETY IS OUR PRIORITY
                   </span>
                 </div>
 
                 {/* Bottom Contact Details Footer with exact updated address */}
-                <div className="text-center text-[10px] text-black leading-normal space-y-0.5 pt-1">
+                <div
+                  className="text-center text-black leading-normal space-y-0.5"
+                  style={{ fontSize: isCompact ? '9px' : '10.5px' }}
+                >
                   <p className="font-semibold text-black">
                     #18/1, Arehalli, ittumadu main road, near basavanna temple, Bengaluru 560061, Karnataka
                   </p>
