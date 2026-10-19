@@ -23,9 +23,7 @@ export const Footer: React.FC = () => {
             <p className="text-zinc-400 leading-relaxed text-xs">
               Complete industrial and commercial fire protection solutions, certified cylinder refilling, hydro-testing, and compliance safety equipment across Karnataka.
             </p>
-            <div className="text-[11px] text-zinc-400 font-mono">
-              Certifications: IS 15683 · BIS · PESO Approved
-            </div>
+
           </div>
 
           {/* Office & Facility Address */}
@@ -105,13 +103,6 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-10 mt-10 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-400">
           <p>© {new Date().getFullYear()} SLN Fire Service. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span>IS: 15683 Compliance</span>
-            <span aria-hidden="true">·</span>
-            <span>GST HSN: 8424 (18%)</span>
-            <span aria-hidden="true">·</span>
-            <span>Bengaluru 560061</span>
-          </div>
         </div>
       </div>
     </footer>

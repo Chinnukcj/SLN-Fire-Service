@@ -204,10 +204,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
                 <span className="text-white font-semibold">{product.fireClass}</span>
               </div>
 
-              {/* Standard Compliance */}
-              <div className="absolute top-3 right-3 text-[10px] text-zinc-400 font-mono bg-zinc-900/90 px-2 py-0.5 rounded-md border border-zinc-800 backdrop-blur-sm shadow-sm">
-                {product.standard.split('/')[0]}
-              </div>
 
               {/* Expand / Zoom Button Overlay */}
               <button

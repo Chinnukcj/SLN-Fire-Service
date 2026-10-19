@@ -94,24 +94,20 @@ export const QuotationModal: React.FC = () => {
 
     const rowsHtml = items.length > 0
       ? items.map((item, idx) => {
-          const servicePrefix = item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of';
+          const servicePrefix = item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of New';
           const materialText = item.material ? ` (${item.material})` : '';
-          const desc = `${servicePrefix} ${item.name} ${item.capacityLabel}${materialText} ISI Marked`;
+          const capacityStr = item.capacityLabel.replace(/capacity/i, '').trim();
+          const desc = `${servicePrefix} ${item.name} ${capacityStr} Capacity${materialText} ISI Marked`;
           const rateText = item.isPriceOnRequest ? 'On Request' : item.unitPrice.toFixed(2);
           const amountText = item.isPriceOnRequest
             ? 'Quoted Sep.'
             : (item.unitPrice * item.quantity).toFixed(2);
 
-          const descHtml = isCompact
-            ? `<strong>${desc}</strong> <span style="font-size: 8.5px; color: #444; font-family: monospace; margin-left: 6px;">[Class: ${item.fireClass} | ${item.standard}]</span>`
-            : `<strong>${desc}</strong>
-               <div style="font-size: 9.5px; color: #333; font-family: monospace; margin-top: 2px;">Class: ${item.fireClass} | ${item.standard}</div>`;
-
           return `
           <tr>
             <td style="text-align:center; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">${idx + 1}</td>
             <td style="padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">
-              ${descHtml}
+              <strong>${desc}</strong>
             </td>
             <td style="text-align:center; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize}; white-space: nowrap;">${String(item.quantity).padStart(2, '0')} NOS</td>
             <td style="text-align:right; padding: ${density.tableCellPadding}; font-size: ${density.tableFontSize};">${rateText}</td>
@@ -694,9 +690,10 @@ export const QuotationModal: React.FC = () => {
 
                       // Construct formal description matching official letterhead
                       const servicePrefix =
-                        item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of';
+                        item.serviceType === 'refill' ? 'Refilling of' : 'Supplying of New';
                       const materialText = item.material ? ` (${item.material})` : '';
-                      const desc = `${servicePrefix} ${item.name} ${item.capacityLabel}${materialText} ISI Marked`;
+                      const capacityStr = item.capacityLabel.replace(/capacity/i, '').trim();
+                      const desc = `${servicePrefix} ${item.name} ${capacityStr} Capacity${materialText} ISI Marked`;
 
                       return (
                         <tr
@@ -713,21 +710,7 @@ export const QuotationModal: React.FC = () => {
                             style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
                             className="border-r border-black font-medium bg-white text-black"
                           >
-                            {isCompact ? (
-                              <div>
-                                <span className="font-semibold text-black">{desc}</span>
-                                <span className="text-[8.5px] text-zinc-600 font-mono ml-1.5 font-normal whitespace-nowrap">
-                                  [Class: {item.fireClass} | {item.standard}]
-                                </span>
-                              </div>
-                            ) : (
-                              <div>
-                                <span className="font-semibold block text-black">{desc}</span>
-                                <span className="text-[9.5px] text-zinc-600 font-mono block mt-0.5">
-                                  Class: {item.fireClass} | {item.standard}
-                                </span>
-                              </div>
-                            )}
+                            <span className="font-semibold text-black">{desc}</span>
                           </td>
                           <td
                             style={{ padding: isCompact ? '2.5px 5px' : isMedium ? '4.5px 6px' : '8px 8px' }}
