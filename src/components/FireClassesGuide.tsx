@@ -30,7 +30,6 @@ export const FireClassesGuide: React.FC = () => {
                   <span className={`w-10 h-10 rounded-xl font-black text-base flex items-center justify-center border font-mono ${item.color}`}>
                     {item.code}
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-400">IS: 15683</span>
                 </div>
 
                 <h3 className="text-sm font-bold text-white mb-2">{item.name}</h3>

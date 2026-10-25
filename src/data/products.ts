@@ -26,6 +26,7 @@ export interface Product {
   idealUses: string[];
   capacities: ProductCapacity[];
   supportedServices?: ServiceType[];
+  image?: string;
   images?: string[];
   technicalSpecs: {
     operatingPressure?: string;
@@ -89,10 +90,11 @@ export const PRODUCTS: Product[] = [
         specs: 'Discharge: 20-25s | Heavy duty industrial shopfloor'
       }
     ],
+    image: '/images/ABC-Multipurpose1-4kg.png',
     images: [
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/ABC-Multipurpose1-4kg.png',
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/ABC-Multipurpose2-4kg.png',
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/ABC-Multipurpose1-6kg.png'
+      '/images/ABC-Multipurpose1-4kg.png',
+      '/images/ABC-Multipurpose2-4kg.png',
+      '/images/ABC-Multipurpose1-6kg.png'
     ],
     technicalSpecs: {
       operatingPressure: '15 Bar',
@@ -128,7 +130,11 @@ export const PRODUCTS: Product[] = [
         specs: 'Covers up to 3.5 - 4 sq. meters | Auto 68°C red bulb trigger'
       }
     ],
-    images: [],
+    image: '/Modular-type.png',
+    images: [
+      '/Modular-type.png',
+      '/Modular-type-2.png'
+    ],
     technicalSpecs: {
       operatingPressure: '15 Bar',
       dischargeRange: '360° Spherical Dispersion',
@@ -178,8 +184,9 @@ export const PRODUCTS: Product[] = [
         specs: 'Heavy capacity with flexible high-pressure hose | Electrical substations'
       }
     ],
+    image: '/images/Co2-1-4.5kg.png',
     images: [
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/Co2-1-4.5kg.png'
+      '/images/Co2-1-4.5kg.png'
     ],
     technicalSpecs: {
       operatingPressure: '55 to 60 Bar',
@@ -223,7 +230,10 @@ export const PRODUCTS: Product[] = [
         specs: 'Heavy mobile trolley with 5m hose & shut-off applicator'
       }
     ],
-    images: [],
+    image: '/Mechanical-foam.png',
+    images: [
+      '/Mechanical-foam.png'
+    ],
     technicalSpecs: {
       operatingPressure: '15 Bar',
       dischargeRange: '4 to 6 Meters',
@@ -266,7 +276,10 @@ export const PRODUCTS: Product[] = [
         specs: 'High-volume mobile fire suppression trolley'
       }
     ],
-    images: [],
+    image: '/Water-CO2.png',
+    images: [
+      '/Water-CO2.png'
+    ],
     technicalSpecs: {
       operatingPressure: '15 Bar',
       dischargeRange: '6 to 8 Meters',
@@ -317,9 +330,10 @@ export const PRODUCTS: Product[] = [
         specs: 'High-volume commercial kitchen & hotel standard'
       }
     ],
+    image: '/images/K-type-1.png',
     images: [
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/K-type-1.png',
-      'https://raw.githubusercontent.com/Chinnukcj/SLN-Fire-Service/main/public/images/K-type-2.png'
+      '/images/K-type-1.png',
+      '/images/K-type-2.png'
     ],
     technicalSpecs: {
       operatingPressure: '12 to 14 Bar',

@@ -76,10 +76,6 @@ function AppContent() {
                 Fire Protection Engineers • Since 2004
               </p>
             </div>
-
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-              Certified ISI &amp; BIS compliant fire fighting systems, rapid refilling, hydro-testing, and commercial facility safety.
-            </p>
           </div>
         </div>
       </section>
@@ -139,9 +135,6 @@ function AppContent() {
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display mt-1 tracking-tight">
                     Fire Extinguishers
                   </h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Supplying all brand new ISI-marked portable and modular fire extinguishers.
-                  </p>
                 </div>
                 <div className="text-xs text-zinc-400 font-mono bg-zinc-900/60 px-3 py-1.5 rounded-lg border border-zinc-800 self-start sm:self-auto">
                   Catalog: <span className="text-white font-semibold">{extinguisherProducts.length} Items</span> • Supply New

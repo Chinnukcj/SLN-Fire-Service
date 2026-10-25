@@ -46,10 +46,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [showSpecs, setShowSpecs] = useState(false);
 
-  // Gallery state
-  const images = product.images && product.images.length > 0 ? product.images : [];
+  // Gallery state - strictly deduplicate using [...new Set(product.images || [product.image])]
+  const rawImageList = product.images && product.images.length > 0
+    ? product.images
+    : (product.image ? [product.image] : []);
+
+  const seenFilenames = new Set<string>();
+  const uniqueImages: string[] = [...new Set(rawImageList)].filter((img) => {
+    if (!img) return false;
+    const filename = img.split('/').pop()?.toLowerCase() || img;
+    if (seenFilenames.has(filename)) return false;
+    seenFilenames.add(filename);
+    return true;
+  });
+
+  const images = uniqueImages;
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
 
   // Current selected capacity item
   const currentCapacity =
@@ -65,10 +79,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
     serviceType === 'buy-new' &&
     !!(currentCapacity.materials && currentCapacity.materials.length > 0);
 
-  // Helper to fallback to local downloaded images if network fails
+  // Helper to fallback to alternative local / public path if network fails
   const getLocalFallback = (url: string) => {
+    if (!url) return '';
     const filename = url.split('/').pop();
-    return filename ? `/images/${filename}` : url;
+    if (!filename) return url;
+    if (url.startsWith('/images/')) {
+      return `/${filename}`;
+    }
+    return `/images/${filename}`;
   };
 
   // Close modal on Escape
@@ -82,7 +101,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPreviewOpen]);
 
-  const currentImageUrl = images[activeImageIndex];
+  const currentImageUrl = images[activeImageIndex] || product.image || '';
+  const isImageFailed = !currentImageUrl || !!imageErrorMap[currentImageUrl];
 
   // Resolve base unit price
   let resolvedPrice: number | 'POR' | null | undefined = null;
@@ -178,24 +198,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
             {/* Main Photo Card Container */}
             <div
               onClick={() => setIsPreviewOpen(true)}
-              className="w-full h-60 bg-zinc-950 rounded-xl border border-zinc-800/80 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-zinc-700 transition-colors cursor-zoom-in"
+              className="w-full h-56 bg-zinc-950 rounded-xl border border-zinc-800/80 flex items-center justify-center p-2 relative overflow-hidden group-hover:border-zinc-700 transition-colors cursor-zoom-in"
               title="Click to view full-size image preview"
             >
-              {currentImageUrl ? (
+              {currentImageUrl && !isImageFailed ? (
                 <img
                   key={currentImageUrl}
                   src={currentImageUrl}
-                  alt={`${product.name} view ${activeImageIndex + 1}`}
-                  className="w-full h-full object-contain p-1 transition-transform duration-300 group-hover:scale-105"
+                  alt={product.name}
+                  className="h-44 w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => {
                     const fallback = getLocalFallback(currentImageUrl);
-                    if (e.currentTarget.src !== fallback && !e.currentTarget.src.endsWith(fallback)) {
+                    if (fallback && fallback !== currentImageUrl && !e.currentTarget.src.endsWith(fallback)) {
                       e.currentTarget.src = fallback;
+                    } else {
+                      setImageErrorMap((prev) => ({ ...prev, [currentImageUrl]: true }));
                     }
                   }}
                 />
               ) : (
-                <ProductIllustration type={product.id} className="w-full h-full max-h-44" />
+                <ProductIllustration type={product.id} className="h-44 w-full object-contain p-2" />
               )}
 
               {/* Minimalist Fire Classification Marker */}
@@ -220,10 +242,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
               </button>
             </div>
 
-            {/* Clickable Miniature Image Thumbnails */}
-            {images.length > 1 && (
+            {/* Clickable Miniature Image Thumbnails - only when 2 or more distinct images */}
+            {uniqueImages.length > 1 && (
               <div className="flex items-center gap-2 mt-3 px-0.5">
-                {images.map((imgUrl, idx) => {
+                {uniqueImages.map((imgUrl, idx) => {
                   const isSelected = idx === activeImageIndex;
                   return (
                     <button
@@ -264,9 +286,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
               <h3 className="text-base sm:text-lg font-bold text-zinc-100 group-hover:text-white transition-colors">
                 {product.name}
               </h3>
-              <p className="text-xs text-zinc-400 line-clamp-1 mt-0.5 font-normal">
-                {product.tagline}
-              </p>
             </div>
 
             {/* 1. SERVICE TYPE TOGGLE (Buy New vs Refill) - Hidden if tab forces service type */}
@@ -343,11 +362,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
                   </button>
                 ))}
               </div>
-              {currentCapacity.specs && (
-                <p className="text-[10px] text-zinc-500 mt-1.5 font-mono">
-                  {currentCapacity.specs}
-                </p>
-              )}
             </div>
 
             {/* 3. MATERIAL TYPE SELECTOR (e.g., K-Type Kitchen Extinguisher Buy New) */}
@@ -674,7 +688,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
 
             {/* Modal Image Viewport */}
             <div className="relative flex-1 min-h-[350px] sm:min-h-[440px] bg-zinc-950 flex items-center justify-center p-6 overflow-hidden">
-              {currentImageUrl ? (
+              {currentImageUrl && !isImageFailed ? (
                 <img
                   key={currentImageUrl}
                   src={currentImageUrl}
@@ -682,14 +696,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
                   className="max-h-[62vh] max-w-full object-contain drop-shadow-2xl"
                   onError={(e) => {
                     const fallback = getLocalFallback(currentImageUrl);
-                    if (e.currentTarget.src !== fallback && !e.currentTarget.src.endsWith(fallback)) {
+                    if (fallback && fallback !== currentImageUrl && !e.currentTarget.src.endsWith(fallback)) {
                       e.currentTarget.src = fallback;
+                    } else {
+                      setImageErrorMap((prev) => ({ ...prev, [currentImageUrl]: true }));
                     }
                   }}
                 />
               ) : (
-                <div className="w-full max-w-md h-72">
-                  <ProductIllustration type={product.id} className="w-full h-full" />
+                <div className="w-full max-w-md h-72 flex items-center justify-center">
+                  <ProductIllustration type={product.id} className="h-64 w-full object-contain p-2" />
                 </div>
               )}
 
@@ -727,9 +743,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, forcedService
             {/* Modal Bottom Gallery Thumbnails Strip & Quick Action Bar */}
             <div className="p-5 border-t border-zinc-800 bg-zinc-950/80 flex flex-col sm:flex-row items-center justify-between gap-4">
               {/* Miniature Preview Thumbnails */}
-              {images.length > 1 ? (
+              {uniqueImages.length > 1 ? (
                 <div className="flex items-center gap-2">
-                  {images.map((imgUrl, idx) => (
+                  {uniqueImages.map((imgUrl, idx) => (
                     <button
                       key={imgUrl}
                       type="button"
